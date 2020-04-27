@@ -1,21 +1,29 @@
+import logging
 import pathlib
 import subprocess
 
-from imggen import equalisation
+from imggen import equalisation, equalise_hist
 
-
+log = logging.getLogger(__name__)
 src_dir = pathlib.Path("text")
 img_out_dir = src_dir / "images"
 out_dir = src_dir / "out"
 
+logging.basicConfig(level=logging.INFO)
+
 # Generate equalise image
+log.info("Generating equalisation image")
 fig = equalisation.plot_equalise()
 fig.savefig(img_out_dir / "equalise.png")
+
+log.info("Generating equalisation histogram image")
+fig = equalise_hist.plot_equalise_hist()
+fig.savefig(img_out_dir / "equalise_hist.png")
 
 # Generate text
 src_file = src_dir / "image.md"
 
-print("Creating Word document")
+log.info("Creating Word document")
 subprocess.run(
     [
         "pandoc",
@@ -30,7 +38,7 @@ subprocess.run(
     ]
 )
 
-print("Creating TeX source")
+log.info("Creating TeX source")
 subprocess.run(
     [
         "pandoc",

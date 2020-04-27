@@ -11,6 +11,7 @@ authors = ["Bruce Cowan <bruce.cowan@strath.ac.uk>"]
 [tool.poetry.dependencies]
 python = "^3.6.1"
 matplotlib = "~3.2"
+scikit-image = "~0.16"
 
 cueimgproc = { path = "../cueimgproc/" }
 

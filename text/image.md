@@ -177,6 +177,14 @@ See [@fig:equalise] for an example of an ultrasound C-scan before and after equa
 In this case, the block size for the adaptive equalisation is such that the image is split into 8 × 8 blocks.
 It can be seen that the contrast between the background and the defects is higher, especially in the case of the image which has undergone local equalisation.
 
+![Histograms of image, and after global and local equalisation](images/equalise_hist.png){#fig:equalise_hist}
+
+See [@fig:equalise_hist] for histograms of the original image, and after the application of global and local equalisation.
+It can be seen that the pixel values in the original images are predominantly that of the five background steps of the sample, as can be expected.
+After a global equalisation process has been carried out, it can be seen that the peaks have been 'spread out' across the full range of possible values.
+Local equalisation preserves the values of the peaks, but they have been spread out in value.
+This has increased the contrast in the non-defect regions.
+
 ## Denoising
 
 *Noise* in an image manifests itself as random fluctuations in the values of pixels when compared to their neighbours.
