@@ -44,13 +44,22 @@ However, the commonly-used JPEG compression algorithm actually stores the image 
 This is to take advantage of the fact that the human vision system is more sensitive to changes in brightness than in colour.
 The colour channels are often stored at a lower resolution than the luma, and this can bring a 50 % savings in storage space of the image, before the main JPEG compression algorithms are applied.
 
-## Histogram
+## Histograms
+
+<!-- Put an image here showing original image, underexposed, overexposed; then their histograms underneath. -->
+
+A *histogram* is a representation of the distribution of pixel values in an image.
+It is common to show the lightness channel of an image in order to determine how well exposed the image is.
+
+See [@fig:histogram] for a demonstration of an image's histogram.
+Also shown are underexposed and overexposed images and their respective histograms.
+It can be seen that the histogram is moved to the left-hand side for the underexposed image, and to the right for the overexposed.
+
+An ideal distribution would have an equal number of pixels for each value, and this would result in a flat histogram.
+This is the principle behind histogram equalisation, and this is described in [@sec:histographequalisation].
+However, for photographic purposes, this often causes displeasing results.
 
 ## C-scans
-
-<!---
-Discuss what C-scans are and how they are generated.
--->
 
 <!---
 ![An example A-scan](images/ascan.png){#fig:ascan}
@@ -67,7 +76,7 @@ However, as long as the ultrasonic wave is propagating normally through the lami
 
 A *C-scan* is a top down view of ultrasound data, where the axes of the image represent a 2D surface of a part.
 It is therefore necessary for a probe to be moved in two dimensions on the part, or for an array to be used.
-The image shown in [@fig:stepped] is a C-scan of a sample composite part, with deliberate defects.
+The image shown in [@fig:stepped] is a C-scan of a sample composite part which contains deliberate defects.
 
 Each pixel in the image represents a single A-scan location.
 This requires a decision in which value to assign to the pixel, given that each A-scan is made of several time domain samples.
@@ -96,13 +105,38 @@ The specifics of several algorithms are discussed in [@sec:imageprocessing].
 
 This section contains details of different image processing techniques.
 
-## General image transforms
+## Image transforms
 
 In this section, *general image transforms* refers to operations which affect the dimensions and shape of the image matrix.
-This includes scaling, translation, rotation, shear and generalised warps.
+This includes the following *affine transformations*:
 
-All the operations discussed in this section can be described by $3 \times 3$ transformation matrices.
-By making use of such matrices, it is possible to chain together several operations to be carried out at the same time.
+* Scaling
+* Translation
+* Rotation
+* Shear
+
+Move generalised warps can be performed using a *projective transform*, whereby the 'corners' of the image can be moved in the $xy$ plane.
+
+All the operations discussed in this section can be performed by the application of $3 \times 3$ transformation matrices.
+By making use of such matrices, it is possible to chain together several operations to be applied by a single matrix multiplication.
+
+The output pixel coordinates are found by multiplying the input coordinates by the transformation matrix, after converting the input coordinates to homogenous ones (i.e. $[x, y, 1]^T$).
+
+### Translation
+
+A *translation* moves the origin point of the image.
+It can be represented by the following matrix [@vanderwalt_scikitimage_2014]:
+
+$$
+T =
+\begin{bmatrix}
+  0 & 0 & t_x \\
+  0 & 0 & t_y \\
+  0 & 0 & 1 \\
+\end{bmatrix}
+$$
+where $t_x$ and $t_y$ are the movements in the $x$ and $y$ axes respectively.
+These are the new positions of the origin of the image (top-left corner).
 
 ### Scaling
 
@@ -112,27 +146,27 @@ This can be represented by the following matrix:
 $$
 T =
 \begin{bmatrix}
-  S_x & 0 & 1 \\
-  0 & S_y & 0 \\
-  0 & 0 & 1 \\
+  s_x & 0   & 1 \\
+  0   & s_y & 0 \\
+  0   & 0   & 1 \\
 \end{bmatrix}
 $$
-where $S_x$ and $S_y$ are the scaling factors (values $\lt 1$ are scaling down) in the $x$ and $y$ directions respectively.
+where $s_x$ and $s_y$ are the scaling factors (values $\lt 1$ are scaling down) in the $x$ and $y$ directions respectively.
 
 It is common in image processing to reduce the size of images in order to speed up more complex operations later in the processing pipeline.
 It was quite common in the early days of digital cameras for images to be *upscaled* in order to achieve more marketable *megapixel* counts.
-However, adding information which is not in the original image can actually cause the effective resolution to reduce.^[This brings to mind the quote "Prediction is very difficult, especially if it's about the future"[@anker_forecasting_2017], which is attributed to Neils Bohr]
+However, adding information which is not in the original image can actually cause the effective resolution to reduce.^[This brings to mind the quote 'Prediction is very difficult, especially if it's about the future'[@anker_forecasting_2017], which is attributed to Neils Bohr]
 
 ### Rotation
 
-*Rotation* of an image can be represented by the following transformation matrix:
+*Rotation* of an image can be represented by the following transformation matrix [@vanderwalt_scikitimage_2014]:
 
 $$
 T =
 \begin{bmatrix}
-  \cos \theta & \sin \theta & 1 \\
-  -\sin \theta & \cos \theta & 0 \\
-  0 & 0 & 1 \\
+  \cos \theta & -\sin \theta & 1 \\
+  \sin \theta &  \cos \theta & 0 \\
+  0           & 0            & 1 \\
 \end{bmatrix}
 $$
 where $\theta$ is the rotation angle referred to the positive $x$ axis (in radians).
@@ -142,16 +176,70 @@ where $\theta$ is the rotation angle referred to the positive $x$ axis (in radia
 It should be noted that this matrix refers to a rotation with a pivot point of the origin point of the image (top-left).
 In order to use another pivot point, a translation procedure must also be performed.
 
+### Shear
+
+*Shear* refers to changing the shape of the image along the $x$ or $y$ axes.
+It can be represented by the following matrix:
+
+<!-- Use phi for this -->
+
+$$
+T =
+\begin{bmatrix}
+  0 & \sin \phi & 1     \\
+  0 & 0           & 0     \\
+  0 & 0           & 1 \\
+\end{bmatrix}
+$$
+where $\phi$ is the shear
+
+### Combined transforms
+
+As has been mentioned previously, it is possible to combine all the above operations into a single matrix transform, known as an *affine transform*.
+An affine transform matrix becomes [@vanderwalt_scikitimage_2014]:
+
+$$
+T = 
+\begin{bmatrix}
+  S_x \cos \theta & - S_y \sin (\theta + \phi) & t_x \\
+  S_x \sin \theta &   S_y \cos (\theta + \phi) & t_y \\
+  0               & 0                          & 1   \\
+\end{bmatrix}
+$$
+
+It is also possible to perform more general operations, such as a *projective transform*, which allows the possibility of freely moving the corners of the image in $xy$ space.
+A projective transform matrix can be constructed from that of an affine transform.
+
+### Estimating transforms
+
+Provided a set of input coordinates and their desired output positions, it is possible to estimate the transformation required.
+This can be done by using methods such as least-squares or RANSAC (RANdom SAmple Consensus).
+RANSAC is less affected by outliers when compared with least-squares.
+
+By making use of frames from a video stream (which each frame is an image), it is possible to make use of generalised image transforms to perform video stabilisation or object tracking [@cowan_performance_2016].
+Finding points in each frame using a point detection algorithm, and by matching the corresponding ones together, a transform can be estimated.
+Point correspondence can be estimated using a description of local area around each point.
+See {#sec:pointdetection} for more details on point detection.
+
+#### RANSAC
+
+*Random Sample Consensus (RANSAC)* is a method similar to a least-squares fit, however it is less susceptible to outliers [@fischler_random_1981].
+It operates by choosing a random subset of the total samples, and producing a fit model using only these samples.
+The number of inliers using this model is established, using a preset distance threshold.
+Other random samples are then selected, and this process is repeated until the number of inliers to the model reaches a threshold.
+The parameters of the model with the highest number of inliers is chosen as the final model.
+
 ### Filtering and boundary modes
 
-<!-- I don't know where to put this section -->
-
 The pixels which make up an image are located at integer coordinate values.
-By applying transforms, it is possible that the ideal new locations of pixels would involve floating-point.
-However, this is not possible in the matrix representation of an image, so a *filtering* algorithm must be applied.
+By applying geometric transforms, it is highly likely that the new locations of pixels would ideally be at floating-point coordinates, which is not possible due to the matrix representations of images, so a *filtering* algorithm must be applied.
 
-The simplest technique is to assign a pixel's value to the *nearest* value of the floating-point coordinates.
-This can result in significant artefacts (for example, aliasing for small angle rotations), and so more complex methods such as *linear* or *cubic* filtering can be used.^[Should I talk more about these?]
+The simplest technique is to assign the ideal floating-point pixel value to the nearest pixel in the output image.
+This can result in significant artefacts (for example, severe aliasing for small angle rotations), and so more complex methods such as *linear* or *cubic* filtering can be used, which interpolate between the floating-point coordinate values to generate the output pixels.
+
+Image processing techniques which make use of matrices have a problem when being run on pixels at the edges of an image, due to the fact that not all the neighbourhood pixels exist.
+To deal with this problem, the image is temporarily resized by a few pixels.
+The values of the newly-created pixels can be set in different ways, for example choosing a constant value, or reflecting the pixels adjacent to them in the original image.
 
 ## Histogram manipulation
 
@@ -161,10 +249,12 @@ For an ideally exposed photograph, the full range of possible pixel values would
 
 ### Tone curves
 
-A function can be applied which maps between input tone in the image and output.
-It is common to use so called *s-shaped* curves, these are used to increase the contrast in the mid-tones of an image.
+A function can be applied which maps between input pixel value and output pixel value.
+These functions could be simple linear operations in order to change the exposure value of an image, or any other general function.
+*S-shaped* curves are used to increase the contrast in the mid-tones of an image, which can result in more pleasing photographs for example.
+Normally, curves are only applied to the lightness channel of colour images, as manipulating the hues is usually not required.
 
-### Histogram equalisation
+### Histogram equalisation {#sec:histogramequalisation}
 
 ![Original image, and global and local equalisation](images/equalise.png){#fig:equalise}
 
@@ -219,6 +309,14 @@ However, it is computationally cheap to perform.
 
 ### Blurring
 
+A *blur* operation is the equivalent to a low-pass filter in signal processing.
+Each pixel in the output image becomes a weighted average of the surrounding pixels.
+
+A common blurring algorithm is the *Gaussian blur*, which uses an approximation of a 2D Gaussian distribution to create a weighted average.
+Such matrices are digital approximations to the function $G(x, y) = \frac{1}{2 \pi \sigma^2} \exp{-\frac{x^2 + y^2}{2 \sigma^2}}$, where $\sigma$ sets the strength of the blur.
+The size of the matrix is dependent upon $\sigma$, in order to achieve an acceptable approximation.
+It is possible to convert this 2D convolution into the application of two 1D convolutions, which speeds up the implementation.
+
 <!---
 Gaussian blurring
 -->
@@ -238,7 +336,7 @@ By running a smoothing algorithm on only the most detailed level, it is possible
 
 Binary threshold methods and their operation, and specific advantages and disadvantages.
 
-## Point detection
+## Point detection {#sec:pointdetection}
 
 The purpose of *point detection* is to find individual pixels which have a significantly different value than their neighbours.
 A simple way of detecting such points is to find approximate derivatives around each pixel's neighbourhood.
