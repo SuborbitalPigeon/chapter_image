@@ -15,6 +15,7 @@ def plot_equalise_hist() -> figure.Figure:
     hist, bin_centres = exposure.histogram(img.grey)
     ax[0].plot(bin_centres, hist)
     ax[0].set(xlim=(0.0, 1.0), ylabel="Frequency", title="Original image")
+    ax[0].set_ylim(bottom=0.0)
 
     global_equalised = img.apply_filter(preprocessing.EqualiseFilter(False))
     hist, bin_centres = exposure.histogram(global_equalised.grey)
