@@ -21,7 +21,7 @@ def plot_equalise() -> figure.Figure:
     ax[2].set_title("After local equalisation")
     local_equalised.plot(ax[2])
 
-    cb = fig.colorbar(plot, ax=ax, shrink=0.8, location='bottom')
+    cb = fig.colorbar(plot, ax=ax, shrink=0.8, location="bottom")
     cb.set_label("Scale common to all images")
 
     return fig

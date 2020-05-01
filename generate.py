@@ -2,7 +2,7 @@ import logging
 import pathlib
 import subprocess
 
-from imggen import equalisation, equalise_hist
+from imggen import affine, equalisation, equalise_hist, sobel
 
 log = logging.getLogger(__name__)
 src_dir = pathlib.Path("text")
@@ -19,6 +19,14 @@ fig.savefig(img_out_dir / "equalise.png")
 log.info("Generating equalisation histogram image")
 fig = equalise_hist.plot_equalise_hist()
 fig.savefig(img_out_dir / "equalise_hist.png")
+
+log.info("Generating sobel image")
+fig = sobel.plot_sobel()
+fig.savefig(img_out_dir / "sobel.png")
+
+log.info("Generating affine transform image")
+fig = affine.plot_affine()
+fig.savefig(img_out_dir / "affine.png")
 
 # Generate text
 src_file = src_dir / "image.md"

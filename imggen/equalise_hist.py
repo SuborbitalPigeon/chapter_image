@@ -10,7 +10,14 @@ import definitions
 def plot_equalise_hist() -> figure.Figure:
     img = image.GreyImage.open(definitions.PROJECT_ROOT / "data" / "stepped.tiff")
 
-    fig, ax = plt.subplots(ncols=3, figsize=(7, 2.5), dpi=150, constrained_layout=True, sharex="all", sharey='all')
+    fig, ax = plt.subplots(
+        ncols=3,
+        figsize=(7, 2.5),
+        dpi=150,
+        constrained_layout=True,
+        sharex="all",
+        sharey="all",
+    )
 
     hist, bin_centres = exposure.histogram(img.grey)
     ax[0].plot(bin_centres, hist)

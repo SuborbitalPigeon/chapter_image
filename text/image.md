@@ -16,33 +16,41 @@ title: Defect recognition using image processing of C-scan images
 
 # Introduction
 
-*Image processing* algorithms are a group of methods which operate on images to produce other images.
-They are commonly used in photography.
-Operations range from simple ones such as rescaling or rotation, up to the complex (for example those which operate in the frequency domain).
+*Image processing* algorithms are a group of methods which operate on images to modify them, or to extract information from them.
+When a photograph is taken with a standard phone or camera, many of these processes are applied to the raw image from the sensor.
+Operations range from simple ones such as rescaling or rotation, up to complex ones such as those which operate in the frequency domain.
+
+In the domain of defect recognition, the main task to be carried out is to separate out regions of the image which indicate defects, and areas that are not defects.
+This is then a problem of image *segmentation*.
 
 ![An example ultrasound image](images/stepped.png){#fig:stepped}
 
-In the domain of defect recognition, the main task to be carried out is one of *segmentation*.
-It is necessary to find the regions which represent defects in the image.
-
 For example, see the image of a reference sample part in [@fig:stepped].
-This sample has thirty deliberate defects, which have been inserted at known locations and depths.
-The part is made of five sections of varying thickness.
-By visual inspection, it is quite easy to see the defect locations based on the contrast difference between the background and the small mostly circular regions.
-The question to be answered becomes 'is it possible for an algorithm to segment these defect regions from the background?'
+This sample has thirty deliberately-introduced defects, which have been inserted at known locations and depths.
+The part is made up of five sections of differing thicknesses.
+By visual inspection, it is quite easy to see most of the defect locations based on the contrast difference between the background and the small mostly circular regions.
+
+The question to be answered by the end of this chapter becomes 'is it possible for an algorithm to segment these defect regions from the background?'
 
 ## Digital images
 
+<!-- Forget about time-varying stuff here? -->
+
 A *digital image* can be represented as a matrix of values.
 This matrix can be 2D in the case of a grey-scale image, 3D in the case of a multi-channel image or a set of greyscale images; or 4D for a set of multi-channel images.
-Sets of images are often used to represent the effect of time.
+Sets of images are often used to represent a variable time.
 
-A *greyscale* image represents the values of a single variable in a spatial scene.
+A *greyscale* image represents the values of a single variable (often lightness) in a spatial scene.
 Multi-channel images are a set of greyscale images stacked together, a common example would be making use of separate colour channels for colour images.
-For general photography purposes, these are commonly displayed with red, green and blue values.
-However, the commonly-used JPEG compression algorithm actually stores the image with channels which represent brightness (Y), blueness (Cb) and redness (Cr), this colour space being known as *YCbCr*.
+For computer display purposes, these are commonly stored as red, green and blue values.
+However, the commonly-used JPEG image storage format actually stores the image with channels which represent brightness (Y), blueness (Cb) and redness (Cr), this colour space being known as *YCbCr*.
 This is to take advantage of the fact that the human vision system is more sensitive to changes in brightness than in colour.
-The colour channels are often stored at a lower resolution than the luma, and this can bring a 50 % savings in storage space of the image, before the main JPEG compression algorithms are applied.
+The colour channels are often stored at a lower resolution than the luma, and this can bring a 50 % savings in storage space of the image, before the main part of the JPEG compression algorithm is applied.
+
+It is worth noting that ultrasound images are single channel, and are therefore greyscale.
+For the purposes of visual interest, many of these images in this chapter are shown in colour.
+The mapping between greyscale value and displayed colour is *perceptually uniform*, which means that the difference in lightness directly corresponds to the same difference in raw value of the greyscale data.
+This removes the biasses inherent in colourmaps which are often used in ultrasound visualisation, which can affect the effective contrast at certain points in the range.
 
 ## Histograms
 
@@ -61,9 +69,7 @@ However, for photographic purposes, this often causes displeasing results.
 
 ## C-scans
 
-<!---
-![An example A-scan](images/ascan.png){#fig:ascan}
--->
+<!-- ![An example A-scan](images/ascan.png){#fig:ascan} -->
 
 An ultrasound signal can be represented in the time domain in an *A-scan*.
 An A-scan shows the amplitude of the ultrasound response with respect to the time since the pulse was sent.
@@ -80,7 +86,7 @@ The image shown in [@fig:stepped] is a C-scan of a sample composite part which c
 
 Each pixel in the image represents a single A-scan location.
 This requires a decision in which value to assign to the pixel, given that each A-scan is made of several time domain samples.
-One approach is to find the Time of Flight (ToF), which is the amount of time taken for the wave to propagate from the front surface of the part to the most prominent echo inside it or the back surface, depending on the relative amplitudes.
+One approach is to find the Time of Flight (ToF), which is the amount of time taken for the wave to propagate from the front surface of the part to the most prominent echo inside it, or the back surface, depending on the relative amplitudes.
 This can then be visualised as a depth map making use of the speed of propagation.
 For a part with no internal defects, this would correspond to a thickness map.
 However, when defects are introduced, the echoes from them mask the echo from the back surface, and this has the effect of appearing to change the apparent depth of the part.
@@ -136,7 +142,7 @@ T =
 \end{bmatrix}
 $$
 where $t_x$ and $t_y$ are the movements in the $x$ and $y$ axes respectively.
-These are the new positions of the origin of the image (top-left corner).
+These values control the position of the origin point of the image, where positive $x$ values shift it left, and positive $y$ upwards.
 
 ### Scaling
 
@@ -146,12 +152,12 @@ This can be represented by the following matrix:
 $$
 T =
 \begin{bmatrix}
-  s_x & 0   & 1 \\
+  s_x & 0   & 0 \\
   0   & s_y & 0 \\
   0   & 0   & 1 \\
 \end{bmatrix}
 $$
-where $s_x$ and $s_y$ are the scaling factors (values $\lt 1$ are scaling down) in the $x$ and $y$ directions respectively.
+where $s_x$ and $s_y$ are the scaling factors (values $\lt 1$ denote scaling up) in the $x$ and $y$ directions respectively.
 
 It is common in image processing to reduce the size of images in order to speed up more complex operations later in the processing pipeline.
 It was quite common in the early days of digital cameras for images to be *upscaled* in order to achieve more marketable *megapixel* counts.
@@ -186,9 +192,9 @@ It can be represented by the following matrix:
 $$
 T =
 \begin{bmatrix}
-  0 & \sin \phi & 1     \\
-  0 & 0           & 0     \\
-  0 & 0           & 1 \\
+  0 & \sin \phi & 1 \\
+  0 & 0         & 0 \\
+  0 & 0         & 1 \\
 \end{bmatrix}
 $$
 where $\phi$ is the shear
@@ -196,7 +202,7 @@ where $\phi$ is the shear
 ### Combined transforms
 
 As has been mentioned previously, it is possible to combine all the above operations into a single matrix transform, known as an *affine transform*.
-An affine transform matrix becomes [@vanderwalt_scikitimage_2014]:
+By chaining these simple transforms together, a combined transform matrix can be [@vanderwalt_scikitimage_2014]:
 
 $$
 T = 
@@ -206,13 +212,34 @@ T =
   0               & 0                          & 1   \\
 \end{bmatrix}
 $$
+where the symbols have the same meanings as defined previously.
 
 It is also possible to perform more general operations, such as a *projective transform*, which allows the possibility of freely moving the corners of the image in $xy$ space.
 A projective transform matrix can be constructed from that of an affine transform.
 
+![An example affine transform](images/affine.png){#fig:affine}
+
+The image shown in [@fig:affine] shows an example of an affine transform, which includes:
+
+* Scale factor of 1.3 in $x$, and 1.5 in $y$.
+* Rotation of 30°.
+* Shear of -30°.
+* Translation of 50 pixels right and 300 pixels down.
+
+This results in the following transformation matrix:
+
+$$
+T = 
+\begin{bmatrix}
+  \frac{1.3 \sqrt{3}}{2} & 0   & -50  \\
+  1.5 \sin \theta        & 1.5 & -300 \\
+  0                      & 0   & 1    \\
+\end{bmatrix}
+$$
+
 ### Estimating transforms
 
-Provided a set of input coordinates and their desired output positions, it is possible to estimate the transformation required.
+Provided a set of input coordinates, and their desired output positions, it is possible to estimate the transformation required.
 This can be done by using methods such as least-squares or RANSAC (RANdom SAmple Consensus).
 RANSAC is less affected by outliers when compared with least-squares.
 
@@ -232,7 +259,7 @@ The parameters of the model with the highest number of inliers is chosen as the 
 ### Filtering and boundary modes
 
 The pixels which make up an image are located at integer coordinate values.
-By applying geometric transforms, it is highly likely that the new locations of pixels would ideally be at floating-point coordinates, which is not possible due to the matrix representations of images, so a *filtering* algorithm must be applied.
+By applying geometric transforms, it is highly likely the new locations of pixels would ideally be at floating-point coordinates, which is not possible due to the matrix representations of images, so a *filtering* algorithm must be applied.
 
 The simplest technique is to assign the ideal floating-point pixel value to the nearest pixel in the output image.
 This can result in significant artefacts (for example, severe aliasing for small angle rotations), and so more complex methods such as *linear* or *cubic* filtering can be used, which interpolate between the floating-point coordinate values to generate the output pixels.
@@ -342,7 +369,7 @@ The purpose of *point detection* is to find individual pixels which have a signi
 A simple way of detecting such points is to find approximate derivatives around each pixel's neighbourhood.
 More complex algorithms involving point *detectors* and neighbourhood *descriptors* can be used to find key points in an image along with a summary of their neighbourhood for applications such as video stabilisation or object detection and tracking [@cowan_performance_2016].
 
-It is required to denoise images before finding points, as the algorithm will likely detect noise pixels as salient points.
+In the highly-likely case of a noisy input image, it is required that denoising be carried out before finding points, as the algorithm will likely detect noise pixels as salient points.
 
 ## Edge detection
 
@@ -350,9 +377,12 @@ The purpose of *edge detection* is to find the pixels which represent significan
 The simplest way to achieve this is to find the derivative of the pixels in a region.
 Due to the discrete grid-like nature of images, the derivative must be approximated by a $3 \times 3$ matrix which is convolved with the image.
 
+![Demonstration of the Sobel operator](images/sobel.png){#fig:sobel}
+
 Horizontal and vertical edges can be detected separately using two different convolution matrices.
 The resultant edge responses can then be used to find a total edge magnitude and edge direction.
 Examples of these types of edge operators are *Sobel*, *Prewitt* and *Roberts*.
+An example of applying the Sobel operator on a greyscale spiral is shown in [@fig:sobel].
 
 ### Laplacian
 
@@ -367,7 +397,7 @@ What's the point of using the LoG over the boring ones?
 
 ### Canny edge detection
 
-The aforementioned edge detection algorithms^[Check plural] only find the edge responses in an image.
+The aforementioned edge detection algorithms only find the edge responses (magnitude and direction) in an image.
 There is no guarantee that these represent actual connected edges, or if they are just local gradients.
 An example of a method which can find connected edges in an image is the *Canny* algorithm [@canny_computational_1986].
 
@@ -403,9 +433,7 @@ Finding circles and ellipses follows a similar process, however the parameters t
 
 ## Region filling
 
-<!---
-The idea of region filling algorithms using random (or specified) seed points.
--->
+<!-- The idea of region filling algorithms using random (or specified) seed points. -->
 
 # Acquisition of C-scan images
 
@@ -446,7 +474,7 @@ This would be the case for defects at different depths of varying depth.
 
 One possible method of removing this problem could be to use a series of C-scan images use different gating parameters.
 These individual images can be *fused* together to increase the defect/non-defect contrast for each defect in the sample.
-This process could be similar to that of *exposure fusion*, which can be used to improve the quality of photographs of high dynamic range scenes[@mertens_exposure_2007].
+This process could be similar to that of *exposure fusion*, which can be used to improve the quality of photographs of high dynamic range scenes [@mertens_exposure_2007].
 Individual photographs are taken by *exposure bracketing*, where some images in the group are underexposed, and others overexposed.
 Details from dark regions of the scene can be extracted from the overexposed photographs, and those from the bright parts of the scene from the underexposed.
 Optimal weights for each image's contribution to the output on a pixel-by-pixel basis are calculated, and the output image is the sum of the individual bracketed exposure after these weights are applied.
