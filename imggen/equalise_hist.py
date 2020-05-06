@@ -1,8 +1,8 @@
 from cueimgproc.nodes import image, preprocessing
 from matplotlib import figure
 from matplotlib import pyplot as plt
-from skimage import exposure
 
+from .routines import histogram
 import definitions
 
 
@@ -19,19 +19,15 @@ def plot_equalise_hist() -> figure.Figure:
         sharey="all",
     )
 
-    hist, bin_centres = exposure.histogram(img.grey)
-    ax[0].plot(bin_centres, hist)
-    ax[0].set(xlim=(0.0, 1.0), ylabel="Frequency", title="Original image")
-    ax[0].set_ylim(bottom=0.0)
+    histogram.plot_histogram(img.grey, ax[0])
+    ax[0].set(title="Original image")
 
     global_equalised = img.apply_filter(preprocessing.EqualiseFilter(False))
-    hist, bin_centres = exposure.histogram(global_equalised.grey)
-    ax[1].plot(bin_centres, hist)
-    ax[1].set(xlabel="Value", title="Global equalisation")
+    histogram.plot_histogram(global_equalised.grey, ax[1])
+    ax[1].set(title="Global equalisation")
 
     local_equalised = img.apply_filter(preprocessing.EqualiseFilter(True))
-    hist, bin_centres = exposure.histogram(local_equalised.grey)
-    ax[2].plot(bin_centres, hist)
+    histogram.plot_histogram(local_equalised.grey, ax[2])
     ax[2].set(title="Local equalisation")
 
     return fig
