@@ -47,10 +47,10 @@ However, the commonly-used JPEG image storage format actually stores the image w
 This is to take advantage of the fact that the human vision system is more sensitive to changes in brightness than in colour.
 The colour channels are often stored at a lower resolution than the luma, and this can bring a 50 % savings in storage space of the image, before the main part of the JPEG compression algorithm is applied.
 
-It is worth noting that ultrasound images are single channel, and are therefore greyscale.
-For the purposes of visual interest, many of these images in this chapter are shown in colour.
-The mapping between greyscale value and displayed colour is *perceptually uniform*, which means that the difference in lightness directly corresponds to the same difference in raw value of the greyscale data.
-This removes the biasses inherent in colourmaps which are often used in ultrasound visualisation, which can affect the effective contrast at certain points in the range.
+Ultrasound data represents a single variable, and therefore images derived from it are greyscale.
+For the purposes of visual interest, many of these images in this chapter have been assigned colourmaps.
+These mappings between pixel value and colour are *perceptually uniform*, which means that there is a linear relation between value and pixel lightness.
+This removes the biasses inherent in colourmaps which are often used for ultrasound visualisation^[For example, the infamous 'rainbow'], which can affect the effective contrast.
 
 ## Histograms
 
@@ -63,8 +63,8 @@ See [@fig:histogram] for a demonstration of an image's histogram.
 Also shown are underexposed and overexposed images and their respective histograms.
 It can be seen that the histogram is moved to the left-hand side for the underexposed image, and to the right for the overexposed.
 
-An ideal distribution would have an equal number of pixels for each value, and this would result in a flat histogram.
-This is the principle behind histogram equalisation, and this is described in [@sec:histographequalisation].
+An ideally-exposed image would have an equal number of pixels for each value, and this would result in a flat histogram.
+Flattening the histogram of an image can be achieved with histogram equalisation, and this is described in [@sec:histographequalisation].
 However, for photographic purposes, this often causes displeasing results.
 
 ## C-scans
@@ -77,8 +77,9 @@ By using the speed of propagation in the material, it is possible to convert tim
 This means that the A-scan can also be seen as echo amplitude vs. depth.
 
 To simplify processing, the ultrasonic propagation speed is commonly assumed to be a constant value.
-For isotropic materials, this is a reasonable assumption, however due to the significant anisotropy of composite materials, this can become an issue.
-However, as long as the ultrasonic wave is propagating normally through the lamina layers, the speed should be relatively constant and independent of the ply layup sequence.
+For isotropic materials, this is a reasonable assumption.
+However, due to the significant anisotropy of composite materials, this can become an issue.
+As long as the ultrasonic wave is propagating normally through the lamina layers, the speed should be relatively constant and independent of the ply layup sequence.
 
 A *C-scan* is a top down view of ultrasound data, where the axes of the image represent a 2D surface of a part.
 It is therefore necessary for a probe to be moved in two dimensions on the part, or for an array to be used.
@@ -292,7 +293,7 @@ It however leads to poor quality results for photographs, as it is a simplistic 
 
 See [@fig:equalise] for an example of an ultrasound C-scan before and after equalisation, both global and local.
 In this case, the block size for the adaptive equalisation is such that the image is split into 8 × 8 blocks.
-It can be seen that the contrast between the background and the defects is higher, especially in the case of the image which has undergone local equalisation.
+It can be seen that the contrast between the background, and the defects is higher, especially in the case of the image which has undergone local equalisation.
 
 ![Histograms of image, and after global and local equalisation](images/equalise_hist.png){#fig:equalise_hist}
 
@@ -359,7 +360,7 @@ By making use of wavelet decomposition (see [@sec:waveletdecompose] for further 
 Noise is generally a variation between individual pixels, and this means that it will be most prominent in the most detailed level of an image pyramid.
 By running a smoothing algorithm on only the most detailed level, it is possible to reduce the noise of the image without having an effect on the general structure.
 
-## Thresholding
+## Thresholding {#sec:thresholding}
 
 Binary threshold methods and their operation, and specific advantages and disadvantages.
 
@@ -453,6 +454,28 @@ This section will contain details of previous work on this problem.
 <!---
 What has been done, reasoning behind why these methods and so on.
 -->
+
+## Simple thresholding
+
+A simple approach to region segmentation can be performed by using *thresholding* methods, such as those described in [@sec:thresholding].
+This has the advantage of being very simple to implement and fast to compute.
+
+As mentioned previously, there are two broad classes of thresholding algorithm, *global* and *local*.
+It is expected that the segmentation performance of global thresholds will be worse than locally thresholded samples.
+
+The main process to be followed in the thresholding segmentation pipeline is:
+
+1. Load the image
+2. Optional preprocessing (denoising, histogram equalisation, resizing)
+3. Apply a thresholding algorithm, which results in a binary image (0 for below threshold pixels, 1 for above).
+4. Separate regions of connected high-valued pixels into labelled regions
+5. Calculate properties of these regions (specifically centroid, area, eccentricity, perimeter)
+
+Using these steps, 
+
+## Edge detection
+
+## Region growing
 
 # Defect recognition performance evaluation
 
