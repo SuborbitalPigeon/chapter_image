@@ -127,7 +127,7 @@ Move generalised warps can be performed using a *projective transform*, whereby 
 All the operations discussed in this section can be performed by the application of $3 \times 3$ transformation matrices.
 By making use of such matrices, it is possible to chain together several operations to be applied by a single matrix multiplication.
 
-The output pixel coordinates are found by multiplying the input coordinates by the transformation matrix, after converting the input coordinates to homogenous ones (i.e. $[x, y, 1]^T$).
+The output pixel coordinates are found by multiplying the input coordinates by the transformation matrix, after converting the input coordinates to homogeneous ones (i.e. $[x, y, 1]^T$).
 
 ### Translation
 
@@ -362,7 +362,40 @@ By running a smoothing algorithm on only the most detailed level, it is possible
 
 ## Thresholding {#sec:thresholding}
 
-Binary threshold methods and their operation, and specific advantages and disadvantages.
+*Thresholding* is a process which can be used to convert a full scale image to a binary image (0 or 1).
+The general working principle of this is to split the image into *dark* and *light* regions.
+In order to divide the pixels into dark and light, a *threshold* value must be found.
+
+There are several algorithms which can be used for this, but they can be grouped into *global* and *local* methods.
+Global methods find a single value for the threshold based on the whole image's histogram.
+Local methods use separate threshold values for each pixel in the image, making use of a pixel's neighbourhood.
+
+![Global thresholding example](images/global_threshold.png){fig:global_threshold}
+
+An example of a global threshold being applied to a C-scan is shown in [@fig:global_threshold], specifically the *Otso* algorithm.
+This finds the optimal threshold based by minimising the interclass variance^[Get a reference for this].
+
+The red line shown in the histogram indicates the threshold that has been chosen.
+As can be seen in the binary image, this algorithm has not performed well.
+This is due to the fact that the threshold has been chosen such that an equal number of peaks have been separated.
+It so happens that the value of the pixels which make up defects on the first two steps of the part have sufficently low values to be below the threshold.
+However the background of the third, fourth and fifth steps are also below this threshold.
+
+It is expected that an algorithm which makes use of local information would yield better results for C-scan images of parts of differing thickness such as this.
+
+![Local thresholding example](images/local_threshold.png){fig:local_threshold}
+
+Shown in [@fig:local_threshold] is a demonstration of the application of a local thresholding algorithm, in this case *Sauvola* [@sauvola_adaptive_2000].
+What is immediately obvious is that the defect segmentation performance using this method is much better, as it deals with the varying background values.
+The red bars in the histogram is a histogram which represents the distribution of pixel threshold values, as this now varies by pixel.
+Interesting to note is the fact that the peaks in the threshold histogram are generally in-between the peaks in the image histogram.
+
+Also shown is an image which shows the threshold value for each pixel.
+Note that the background of each step in the image is different, this explains the increased performance of this method when compared to that demonstrated in [@fig:local_threshold].
+
+Segmentation performance of thresholding is fair, but the main advantage is that of processing time.
+For the images above, the global method took roughly 5 ms, and the local method 22 ms.
+Local methods are more complex, so this has an impact on processing time, but comes with the advantages mentioned previously.
 
 ## Point detection {#sec:pointdetection}
 
@@ -482,6 +515,46 @@ Using these steps,
 <!---
 Quantitative performance evaluations of the previous section's work.
 -->
+
+With reference to the dimensions of the sample part and the expected locations of the defects, it is possible to determine the precision and positional accuracy of the described segmentation methods.
+
+<!-- Put a picture of the reference sample here -->
+
+The engineering drawing of the reference part is shown in [@fig:reference_drawing].
+Centroid coordinates (in mm) of the defect positions were created, resulting in a $30 \times 2$ matrix.
+
+The C-scan however does not cover the entirely of the part, and there is a scaling factor involved to convert pixel space to physical space.
+The image could also be rotated with respect the scanned part, due to the fact a physical process was involved in the scan.
+In order to find a transformation from pixel space to physical space, a method such as least-squares can be used to match coordinates in the image to physical positions.
+
+![Manually segmented defect regions](images/stepped-defects.png){#fig:stepped_defects}
+
+Using the engineering drawing, the positions of defects were determined.
+It is then required to find the corresponding points in the C-scan, and use these two matrices to calculate the image transformation required to reproject the image into physical coordinates.
+To produce a *ground truth*, a binary image was created manually, with the defect pixels being marked by hand.
+The C-scan showed no sign of the defect in the third row and third column, hence why it is not displayed.
+Using scikit-image, the properties of these regions were determined, with the intention of finding the centroids.
+Making use of these centroids and the expected defect locations in mm, an affine transformation matrix was found using a least-squares method:
+
+$$
+\begin{bmatrix}
+  0.6618 & -0.0062 & 8.7165 \\
+  0.0020 & 0.5248 & 76.5579 \\
+  0.0000 & 0.0000 & 1.000 \\
+\end{bmatrix}
+$$
+which corresponds to:
+
+* Translation $(t_x, t_y) = (8.72, 76.6)$ mm.
+* Scale $(s_x, s_y) = (0.662, 0.625)$ mm/px.
+* Rotation $\theta = 0.173°$
+* Shear $\phi = 0.501°$.
+
+## Thresholding
+
+## Edge detection
+
+## Region filling
 
 # Conclusions and future work
 

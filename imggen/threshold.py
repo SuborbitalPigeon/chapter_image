@@ -27,11 +27,11 @@ def _do_plotting(
     fig.colorbar(original_plot, ax=ax[0])
 
     thresh_plot = threshed.plot(ax[1], {"cmap": plt.cm.get_cmap("viridis", 2)})
-    ax[1].set(title=f"Image after {threshold_type.name.lower()} thresholding")
+    ax[1].set(title=f"Image after {threshold_type.name.capitalize()} thresholding")
     fig.colorbar(thresh_plot, ax=ax[1])
 
     histogram.plot_histogram(img.grey, ax[2])
-    ax[2].set(xlabel="Value", ylabel="Frequency")
+    ax[2].set(title="Histogram", xlabel="Value", ylabel="Frequency")
 
     return filter.threshold_value
 
@@ -53,7 +53,8 @@ def plot_local_threshold() -> figure.Figure:
     ax[2].set(xlabel="Value", ylabel="Frequency")
 
     value_image = image.GreyImage(value)
-    value_image.plot(ax[3])
+    value_plot = value_image.plot(ax[3])
     ax[3].set(title="Threshold value")
+    fig.colorbar(value_plot, ax=ax[3])
 
     return fig

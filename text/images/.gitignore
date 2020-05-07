@@ -4,3 +4,4 @@ sobel.png
 affine.png
 global_threshold.png
 local_threshold.png
+groundtruth_warp.png
