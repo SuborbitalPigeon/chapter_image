@@ -1,8 +1,8 @@
 from cueimgproc.nodes import edge, image
 from matplotlib import colors, figure
-from matplotlib import pyplot as plt
 import numpy as np
 
+from .routines import plottools
 import definitions
 
 
@@ -15,7 +15,7 @@ def plot_sobel() -> figure.Figure:
     amplitude = edges.edge_magnitude
     direction = edges.edge_direction * (180.0 / np.pi)
 
-    fig, axs = plt.subplots(2, 3, dpi=150, figsize=(9, 5), constrained_layout=True)
+    fig, axs = plottools.create_subplots((9, 5), 2, 3)
 
     spiral_plot = img.plot(axs[0, 0], cmap="Greys")
     axs[0, 0].set(title="Image")

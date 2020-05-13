@@ -1,23 +1,14 @@
 from cueimgproc.nodes import image, preprocessing
 from matplotlib import figure
-from matplotlib import pyplot as plt
 
-from .routines import histogram
+from .routines import histogram, plottools
 import definitions
 
 
-# noinspection PyTypeChecker
 def plot_equalise_hist() -> figure.Figure:
     img = image.GreyImage.open(definitions.PROJECT_ROOT / "data" / "stepped.tiff")
 
-    fig, ax = plt.subplots(
-        ncols=3,
-        figsize=(7, 2.5),
-        dpi=150,
-        constrained_layout=True,
-        sharex="all",
-        sharey="all",
-    )
+    fig, ax = plottools.create_subplots((7, 2.5), ncols=3, sharex="all", sharey="all",)
 
     histogram.plot_histogram(img.grey, ax[0])
     ax[0].set(title="Original image")

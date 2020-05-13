@@ -1,15 +1,13 @@
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Union
+from typing import Union
 
 from cueimgproc.nodes import common, image, threshold
+from matplotlib import figure
 from matplotlib import pyplot as plt
+import numpy as np
 
-if TYPE_CHECKING:
-    from matplotlib import figure
-    import numpy as np
-
-from .routines import histogram
+from .routines import histogram, plottools
 import definitions
 
 
@@ -37,7 +35,7 @@ def _do_plotting(
 
 
 def plot_global_threshold() -> figure.Figure:
-    fig, ax = plt.subplots(3, figsize=(6, 4), dpi=150, constrained_layout=True)
+    fig, ax = plottools.create_subplots((6, 4), 3)
 
     value = _do_plotting(fig, ax, threshold.ThresholdType.OTSU)
     ax[2].axvline(value, color="red")
@@ -46,7 +44,7 @@ def plot_global_threshold() -> figure.Figure:
 
 
 def plot_local_threshold() -> figure.Figure:
-    fig, ax = plt.subplots(4, figsize=(6, 5), dpi=150, constrained_layout=True)
+    fig, ax = plottools.create_subplots((6, 5), 4)
 
     value = _do_plotting(fig, ax, threshold.ThresholdType.SAUVOLA)
     ax[2].hist(value.ravel(), bins="auto", color="red", alpha=0.5)

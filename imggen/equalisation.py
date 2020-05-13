@@ -1,7 +1,7 @@
 from cueimgproc.nodes import image, preprocessing
 from matplotlib import figure
-from matplotlib import pyplot as plt
 
+from .routines import plottools
 import definitions
 
 
@@ -10,7 +10,7 @@ def plot_equalise() -> figure.Figure:
     global_equalised = img.apply_filter(preprocessing.EqualiseFilter(False))
     local_equalised = img.apply_filter(preprocessing.EqualiseFilter(True))
 
-    fig, ax = plt.subplots(3, figsize=(5, 4), dpi=150, constrained_layout=True)
+    fig, ax = plottools.create_subplots((5, 4), 3)
 
     ax[0].set_title("Original image")
     plot = img.plot(ax[0])
