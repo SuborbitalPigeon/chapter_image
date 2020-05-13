@@ -17,7 +17,7 @@ def plot_sobel() -> figure.Figure:
 
     fig, axs = plt.subplots(2, 3, dpi=150, figsize=(9, 5), constrained_layout=True)
 
-    spiral_plot = img.plot(axs[0, 0], {"cmap": "Greys"})
+    spiral_plot = img.plot(axs[0, 0], cmap="Greys")
     axs[0, 0].set(title="Image")
     fig.colorbar(spiral_plot, ax=axs[0, 0])
 
