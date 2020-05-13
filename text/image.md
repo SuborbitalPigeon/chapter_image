@@ -52,6 +52,32 @@ For the purposes of visual interest, many of these images in this chapter have b
 These mappings between pixel value and colour are *perceptually uniform*, which means that there is a linear relation between value and pixel lightness.
 This removes the biasses inherent in colourmaps which are often used for ultrasound visualisation^[For example, the infamous 'rainbow'], which can affect the effective contrast.
 
+## Pixel connectivity
+
+The *connectivity* of a pixel describes its relationship with its neighbouring pixels.
+For a 2D image, it is possible to define *4-connectivity* and *8-connectivity*, with the numbers indicating how many of the neighbouring pixels are considered to be connected to the central one.
+More complex structures can be implemented for higher dimension data such as stacks of images (3D).
+
+These different types of connectivity can be demonstrated as:
+$$
+\begin{align}
+C_4 = \begin{matrix}
+  0 & 1 & 0 \\
+  1 & X & 1 \\
+  0 & 1 & 0 \\
+\end{matrix}
+&
+C_8 = \begin{matrix}
+  1 & 1 & 1 \\
+  1 & X & 1 \\
+  1 & 1 & 1 \\
+\end{matrix}
+\end{align}
+$$
+where $X$ indicates the central pixel of the region.
+
+This is an important concept to understand for several image processing algorithms, particularly *region filling*.
+
 ## Histograms
 
 <!-- Put an image here showing original image, underexposed, overexposed; then their histograms underneath. -->
@@ -143,7 +169,7 @@ T =
 \end{bmatrix}
 $$
 where $t_x$ and $t_y$ are the movements in the $x$ and $y$ axes respectively.
-These values control the position of the origin point of the image, where positive $x$ values shift it left, and positive $y$ upwards.
+Positive values of $x$ shift the origin to the left, and positive $y$ shift it upwards.
 
 ### Scaling
 
@@ -161,8 +187,8 @@ $$
 where $s_x$ and $s_y$ are the scaling factors (values $\lt 1$ denote scaling up) in the $x$ and $y$ directions respectively.
 
 It is common in image processing to reduce the size of images in order to speed up more complex operations later in the processing pipeline.
-It was quite common in the early days of digital cameras for images to be *upscaled* in order to achieve more marketable *megapixel* counts.
-However, adding information which is not in the original image can actually cause the effective resolution to reduce.^[This brings to mind the quote 'Prediction is very difficult, especially if it's about the future'[@anker_forecasting_2017], which is attributed to Neils Bohr]
+In the early days of digital photography, it was quite common for digital cameras to *upscale* their output images in order to achieve more marketable *megapixel* counts.
+However, trying to add information which is not in the original image actually cause the effective resolution to reduce.^[This brings to mind the quote 'Prediction is very difficult, especially if it's about the future'[@anker_forecasting_2017], which is attributed to Neils Bohr]
 
 ### Rotation
 
@@ -198,12 +224,12 @@ T =
   0 & 0         & 1 \\
 \end{bmatrix}
 $$
-where $\phi$ is the shear
+where $\phi$ is the shear angle.
 
 ### Combined transforms
 
 As has been mentioned previously, it is possible to combine all the above operations into a single matrix transform, known as an *affine transform*.
-By chaining these simple transforms together, a combined transform matrix can be [@vanderwalt_scikitimage_2014]:
+By chaining these simple operations together, the combined transform matrix can be [@vanderwalt_scikitimage_2014]:
 
 $$
 T = 
@@ -244,10 +270,10 @@ Provided a set of input coordinates, and their desired output positions, it is p
 This can be done by using methods such as least-squares or RANSAC (RANdom SAmple Consensus).
 RANSAC is less affected by outliers when compared with least-squares.
 
-By making use of frames from a video stream (which each frame is an image), it is possible to make use of generalised image transforms to perform video stabilisation or object tracking [@cowan_performance_2016].
-Finding points in each frame using a point detection algorithm, and by matching the corresponding ones together, a transform can be estimated.
+By making use of frames from a video stream (where each frame is an image), it is possible to make use of generalised image transforms to perform video stabilisation or object tracking [@cowan_performance_2016].
+Finding points in each frame using a point detection algorithm, and by matching the corresponding ones, a transform can be estimated.
 Point correspondence can be estimated using a description of local area around each point.
-See {#sec:pointdetection} for more details on point detection.
+See [#sec:pointdetection] for more details on point detection.
 
 #### RANSAC
 
@@ -279,12 +305,12 @@ For an ideally exposed photograph, the full range of possible pixel values would
 
 A function can be applied which maps between input pixel value and output pixel value.
 These functions could be simple linear operations in order to change the exposure value of an image, or any other general function.
-*S-shaped* curves are used to increase the contrast in the mid-tones of an image, which can result in more pleasing photographs for example.
+*S-shaped* curves are often used to increase the contrast in the mid-tones of an image, which can result in more pleasing photographs for example.
 Normally, curves are only applied to the lightness channel of colour images, as manipulating the hues is usually not required.
 
-### Histogram equalisation {#sec:histogramequalisation}
+### Histogram equalisation {#sec:histographequalisation}
 
-![Original image, and global and local equalisation](images/equalise.png){#fig:equalise}
+![Original image, and after the application of global and local equalisation](images/equalise.png){#fig:equalise}
 
 *Histogram equalisation* is a process whereby the values are modified to create as close to a flat histogram as possible.
 This is achieved by increasing the distance between values assigned to more common input values.
@@ -370,7 +396,7 @@ There are several algorithms which can be used for this, but they can be grouped
 Global methods find a single value for the threshold based on the whole image's histogram.
 Local methods use separate threshold values for each pixel in the image, making use of a pixel's neighbourhood.
 
-![Global thresholding example](images/global_threshold.png){fig:global_threshold}
+![Global thresholding example](images/global_threshold.png){#fig:global_threshold}
 
 An example of a global threshold being applied to a C-scan is shown in [@fig:global_threshold], specifically the *Otso* algorithm.
 This finds the optimal threshold based by minimising the interclass variance^[Get a reference for this].
@@ -383,7 +409,7 @@ However the background of the third, fourth and fifth steps are also below this 
 
 It is expected that an algorithm which makes use of local information would yield better results for C-scan images of parts of differing thickness such as this.
 
-![Local thresholding example](images/local_threshold.png){fig:local_threshold}
+![Local thresholding example](images/local_threshold.png){#fig:local_threshold}
 
 Shown in [@fig:local_threshold] is a demonstration of the application of a local thresholding algorithm, in this case *Sauvola* [@sauvola_adaptive_2000].
 What is immediately obvious is that the defect segmentation performance using this method is much better, as it deals with the varying background values.
@@ -547,8 +573,17 @@ which corresponds to:
 
 * Translation $(t_x, t_y) = (8.72, 76.6)$ mm.
 * Scale $(s_x, s_y) = (0.662, 0.625)$ mm/px.
-* Rotation $\theta = 0.173°$
+* Rotation $\theta = 0.173°$z
 * Shear $\phi = 0.501°$.
+
+![Estimated transform with errors](images/groundtruth_transform.png){#fig:groundtruth_transform}
+
+When finding this transformation, the points will have certain errors with respect to the ideal locations.
+An image which shows these points with these errors is shown in [#fig:groundtruth_transform].
+
+![Estimated transform errors](images/groundtruth_error.png){#fig:groundtruth_error}
+
+The values of these errors are shown in a histogram in [#fig:groundtruth_error].
 
 ## Thresholding
 

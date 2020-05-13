@@ -6,7 +6,14 @@ from typing import Callable
 
 from matplotlib import figure
 
-from imggen import affine, equalisation, equalise_hist, threshold, sobel
+from imggen import (
+    affine,
+    equalisation,
+    equalise_hist,
+    groundtruth_transform,
+    threshold,
+    sobel,
+)
 
 
 log = logging.getLogger(__name__)
@@ -36,12 +43,14 @@ def generate_image(func: Callable[[], figure.Figure], file_name: str) -> None:
 
 
 # Generate equalise image
+generate_image(affine.plot_affine, "affine.png")
 generate_image(equalisation.plot_equalise, "equalise.png")
 generate_image(equalise_hist.plot_equalise_hist, "equalise_hist.png")
-generate_image(sobel.plot_sobel, "sobel.png")
-generate_image(affine.plot_affine, "affine.png")
 generate_image(threshold.plot_global_threshold, "global_threshold.png")
+generate_image(groundtruth_transform.plot_error, "groundtruth_error.png")
+generate_image(groundtruth_transform.plot_full_part, "groundtruth_transform.png")
 generate_image(threshold.plot_local_threshold, "local_threshold.png")
+generate_image(sobel.plot_sobel, "sobel.png")
 
 # Generate text
 src_file = src_dir / "image.md"

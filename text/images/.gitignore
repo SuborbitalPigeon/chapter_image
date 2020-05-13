@@ -1,7 +1,8 @@
+affine.png
 equalise.png
 equalise_hist.png
-sobel.png
-affine.png
 global_threshold.png
+groundtruth_error.png
+groundtruth_transform.png
 local_threshold.png
-groundtruth_warp.png
+sobel.png

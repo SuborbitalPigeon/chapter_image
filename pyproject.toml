@@ -12,7 +12,10 @@ authors = ["Bruce Cowan <bruce.cowan@strath.ac.uk>"]
 python = "^3.7"
 matplotlib = "~3.2"
 numpy = "~1.18"
+pandas = "^1"
 scikit-image = "~0.17"
+scipy = "~1.4"
+seaborn = "~0.10"
 
 cueimgproc = { path = "../cueimgproc/" }
 
