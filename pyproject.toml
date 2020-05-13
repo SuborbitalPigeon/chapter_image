@@ -9,10 +9,10 @@ description = "Image processing chapter"
 authors = ["Bruce Cowan <bruce.cowan@strath.ac.uk>"]
 
 [tool.poetry.dependencies]
-python = "^3.6.1"
+python = "^3.7"
 matplotlib = "~3.2"
 numpy = "~1.18"
-scikit-image = "~0.16"
+scikit-image = "~0.17"
 
 cueimgproc = { path = "../cueimgproc/" }
 
