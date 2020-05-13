@@ -1,3 +1,4 @@
+import inspect
 import logging
 import pathlib
 import subprocess
@@ -17,9 +18,21 @@ out_dir = src_dir / "out"
 
 
 def generate_image(func: Callable[[], figure.Figure], file_name: str) -> None:
+    image_path = img_out_dir / file_name
+
+    try:
+        image_mtimens = image_path.stat().st_mtime_ns
+        func_mtimens = pathlib.Path(inspect.getfile(func)).stat().st_mtime_ns
+    except FileNotFoundError:
+        pass
+    else:
+        if image_mtimens > func_mtimens:
+            log.info(f"Skipping generating {file_name} as code hasn't changed")
+            return
+
     log.info(f"Generating {file_name}")
     fig = func()
-    fig.savefig(img_out_dir / file_name)
+    fig.savefig(image_path)
 
 
 # Generate equalise image
