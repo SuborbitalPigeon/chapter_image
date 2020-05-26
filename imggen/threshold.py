@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import Union
 
-from cueimgproc.nodes import common, image, threshold
+import cueimgproc
 from matplotlib import figure
 from matplotlib import pyplot as plt
 import numpy as np
@@ -12,12 +12,12 @@ import definitions
 
 
 def _do_plotting(
-    fig: figure.Figure, ax: np.ndarray, threshold_type: threshold.ThresholdType
+    fig: figure.Figure, ax: np.ndarray, threshold_type: cueimgproc.ThresholdType
 ) -> Union[float, np.ndarray]:
-    img = image.GreyImage.open(definitions.DATA_DIR / "stepped.tiff")
-    img = img.apply_filter(common.RemoveAlphaFilter())
+    img = cueimgproc.GreyImage.open(definitions.DATA_DIR / "stepped.tiff")
+    img = img.apply_filter(cueimgproc.RemoveAlphaFilter())
 
-    filter = threshold.ThresholdFilter(threshold_type)
+    filter = cueimgproc.ThresholdFilter(threshold_type)
     threshed = img.apply_filter(filter)
 
     original_plot = img.plot(ax[0])
@@ -37,7 +37,7 @@ def _do_plotting(
 def plot_global_threshold() -> figure.Figure:
     fig, ax = plottools.create_subplots((6, 4), 3)
 
-    value = _do_plotting(fig, ax, threshold.ThresholdType.OTSU)
+    value = _do_plotting(fig, ax, cueimgproc.ThresholdType.OTSU)
     ax[2].axvline(value, color="red")
 
     return fig
@@ -46,11 +46,11 @@ def plot_global_threshold() -> figure.Figure:
 def plot_local_threshold() -> figure.Figure:
     fig, ax = plottools.create_subplots((6, 5), 4)
 
-    value = _do_plotting(fig, ax, threshold.ThresholdType.SAUVOLA)
+    value = _do_plotting(fig, ax, cueimgproc.ThresholdType.SAUVOLA)
     ax[2].hist(value.ravel(), bins="auto", color="red", alpha=0.5)
     ax[2].set(xlabel="Value", ylabel="Frequency")
 
-    value_image = image.GreyImage(value)
+    value_image = cueimgproc.GreyImage(value)
     value_plot = value_image.plot(ax[3])
     ax[3].set(title="Threshold value")
     fig.colorbar(value_plot, ax=ax[3])

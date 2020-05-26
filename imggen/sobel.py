@@ -1,4 +1,4 @@
-from cueimgproc.nodes import edge, image
+import cueimgproc
 from matplotlib import colors, figure
 import numpy as np
 
@@ -7,9 +7,9 @@ import definitions
 
 
 def plot_sobel() -> figure.Figure:
-    img = image.GreyImage.open(definitions.PROJECT_ROOT / "data" / "spiral.png")
+    img = cueimgproc.GreyImage.open(definitions.PROJECT_ROOT / "data" / "spiral.png")
 
-    edges = edge.DirectionalEdgeDetector(edge.EdgeFilterType.SOBEL)
+    edges = cueimgproc.DirectionalEdgeDetector(cueimgproc.EdgeFilterType.SOBEL)
     edges(img)
 
     amplitude = edges.edge_magnitude

@@ -1,4 +1,4 @@
-from cueimgproc.nodes import image, preprocessing
+import cueimgproc
 from matplotlib import figure
 
 from .routines import plottools
@@ -6,9 +6,9 @@ import definitions
 
 
 def plot_equalise() -> figure.Figure:
-    img = image.GreyImage.open(definitions.PROJECT_ROOT / "data" / "stepped.tiff")
-    global_equalised = img.apply_filter(preprocessing.EqualiseFilter(False))
-    local_equalised = img.apply_filter(preprocessing.EqualiseFilter(True))
+    img = cueimgproc.GreyImage.open(definitions.PROJECT_ROOT / "data" / "stepped.tiff")
+    global_equalised = img.apply_filter(cueimgproc.EqualiseFilter(False))
+    local_equalised = img.apply_filter(cueimgproc.EqualiseFilter(True))
 
     fig, ax = plottools.create_subplots((5, 4), 3)
 

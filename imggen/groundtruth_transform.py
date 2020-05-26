@@ -6,14 +6,14 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 import seaborn as sns
-from skimage import transform
+from skimage import io, transform
 
 from imggen.routines import plottools
 import definitions
-from cueimgproc.nodes import image
 
 
 log = logging.getLogger(__name__)
+
 
 def plot_full_part() -> figure.Figure:
     return _plot_groundtruth_transform()[0]
@@ -37,8 +37,7 @@ def _plot_groundtruth_transform() -> List[figure.Figure]:
 
     model = transform.estimate_transform("affine", defect_pos_px, defect_pos_mm)
 
-    img = image.GreyImage.open(definitions.DATA_DIR / "stepped.tiff")
-    grey = np.copy(img.grey)  # Warp requires a read-write source
+    grey = io.imread(definitions.DATA_DIR / "stepped.tiff")[:, :, 0]
     warped = transform.warp(grey, model.inverse, output_shape=(250, 800), cval=np.nan)
 
     warp_fig, warp_ax = plottools.create_subplots((7, 3))
