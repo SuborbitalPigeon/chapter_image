@@ -43,13 +43,13 @@ def generate_image(func: Callable[[], figure.Figure], file_name: str) -> None:
 
 
 # Generate equalise image
+generate_image(threshold.plot_adaptive_threshold, "adaptive_threshold.png")
 generate_image(affine.plot_affine, "affine.png")
 generate_image(equalisation.plot_equalise, "equalise.png")
 generate_image(equalise_hist.plot_equalise_hist, "equalise_hist.png")
 generate_image(threshold.plot_global_threshold, "global_threshold.png")
 generate_image(groundtruth_transform.plot_error, "groundtruth_error.png")
 generate_image(groundtruth_transform.plot_full_part, "groundtruth_transform.png")
-generate_image(threshold.plot_local_threshold, "local_threshold.png")
 generate_image(sobel.plot_sobel, "sobel.png")
 
 # Generate text

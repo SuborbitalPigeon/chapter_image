@@ -8,7 +8,7 @@ import definitions
 def plot_equalise_hist() -> figure.Figure:
     img = cueimgproc.GreyImage.open(definitions.PROJECT_ROOT / "data" / "stepped.tiff")
 
-    fig, ax = plottools.create_subplots((7, 2.5), ncols=3, sharex="all", sharey="all",)
+    fig, ax = plottools.create_subplots((7, 2.5), ncols=3, sharex="all", sharey="all")
 
     histogram.plot_histogram(img.grey, ax[0])
     ax[0].set(title="Original image")
@@ -19,6 +19,6 @@ def plot_equalise_hist() -> figure.Figure:
 
     local_equalised = img.apply_filter(cueimgproc.EqualiseFilter(True))
     histogram.plot_histogram(local_equalised.grey, ax[2])
-    ax[2].set(title="Local equalisation")
+    ax[2].set(title="Adaptive equalisation")
 
     return fig

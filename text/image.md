@@ -310,23 +310,23 @@ Normally, curves are only applied to the lightness channel of colour images, as 
 
 ### Histogram equalisation {#sec:histographequalisation}
 
-![Original image, and after the application of global and local equalisation](images/equalise.png){#fig:equalise}
+![Original image, and after the application of global and adaptive equalisation](images/equalise.png){#fig:equalise}
 
 *Histogram equalisation* is a process whereby the values are modified to create as close to a flat histogram as possible.
 This is achieved by increasing the distance between values assigned to more common input values.
 This is a way of improving the contrast in an image, and is useful for image processing for scientific purposes.
 It however leads to poor quality results for photographs, as it is a simplistic operation.
 
-See [@fig:equalise] for an example of an ultrasound C-scan before and after equalisation, both global and local.
+See [@fig:equalise] for an example of an ultrasound C-scan before and after equalisation, both global and adaptive.
 In this case, the block size for the adaptive equalisation is such that the image is split into 8 × 8 blocks.
 It can be seen that the contrast between the background, and the defects is higher, especially in the case of the image which has undergone local equalisation.
 
-![Histograms of image, and after global and local equalisation](images/equalise_hist.png){#fig:equalise_hist}
+![Histograms of image, and after global and adaptive equalisation](images/equalise_hist.png){#fig:equalise_hist}
 
-See [@fig:equalise_hist] for histograms of the original image, and after the application of global and local equalisation.
+See [@fig:equalise_hist] for histograms of the original image, and after the application of global and adaptive equalisation.
 It can be seen that the pixel values in the original images are predominantly that of the five background steps of the sample, as can be expected.
 After a global equalisation process has been carried out, it can be seen that the peaks have been 'spread out' across the full range of possible values.
-Local equalisation preserves the values of the peaks, but they have been spread out in value.
+Adaptive equalisation preserves the values of the peaks, but they have been spread out in value.
 This has increased the contrast in the non-defect regions.
 
 ## Denoising
@@ -392,9 +392,9 @@ By running a smoothing algorithm on only the most detailed level, it is possible
 The general working principle of this is to split the image into *dark* and *light* regions.
 In order to divide the pixels into dark and light, a *threshold* value must be found.
 
-There are several algorithms which can be used for this, but they can be grouped into *global* and *local* methods.
+There are several algorithms which can be used for this, but they can be grouped into *global* and *adaptive* methods.
 Global methods find a single value for the threshold based on the whole image's histogram.
-Local methods use separate threshold values for each pixel in the image, making use of a pixel's neighbourhood.
+Adaptive methods use separate threshold values for each pixel in the image, making use of a pixel's neighbourhood.
 
 ![Global thresholding example](images/global_threshold.png){#fig:global_threshold}
 
@@ -409,19 +409,19 @@ However the background of the third, fourth and fifth steps are also below this 
 
 It is expected that an algorithm which makes use of local information would yield better results for C-scan images of parts of differing thickness such as this.
 
-![Local thresholding example](images/local_threshold.png){#fig:local_threshold}
+![Adaptive thresholding example](images/adaptive_threshold.png){#fig:adaptive_threshold}
 
-Shown in [@fig:local_threshold] is a demonstration of the application of a local thresholding algorithm, in this case *Sauvola* [@sauvola_adaptive_2000].
+Shown in [@fig:adaptive_threshold] is a demonstration of the application of a adaptive thresholding algorithm, in this case *Sauvola* [@sauvola_adaptive_2000].
 What is immediately obvious is that the defect segmentation performance using this method is much better, as it deals with the varying background values.
 The red bars in the histogram is a histogram which represents the distribution of pixel threshold values, as this now varies by pixel.
 Interesting to note is the fact that the peaks in the threshold histogram are generally in-between the peaks in the image histogram.
 
 Also shown is an image which shows the threshold value for each pixel.
-Note that the background of each step in the image is different, this explains the increased performance of this method when compared to that demonstrated in [@fig:local_threshold].
+Note that the background of each step in the image is different, this explains the increased performance of this method when compared to that demonstrated in [@fig:adaptive_threshold].
 
 Segmentation performance of thresholding is fair, but the main advantage is that of processing time.
-For the images above, the global method took roughly 5 ms, and the local method 22 ms.
-Local methods are more complex, so this has an impact on processing time, but comes with the advantages mentioned previously.
+For the images above, the global method took roughly 5 ms, and the adaptive method 22 ms.
+Adaptive methods are more complex, so this has an impact on processing time, but comes with the advantages mentioned previously.
 
 ## Point detection {#sec:pointdetection}
 
@@ -517,10 +517,13 @@ What has been done, reasoning behind why these methods and so on.
 ## Simple thresholding
 
 A simple approach to region segmentation can be performed by using *thresholding* methods, such as those described in [@sec:thresholding].
-This has the advantage of being very simple to implement and fast to compute.
+Thresholding has the advantage of being very simple to implement and fast to compute.
 
-As mentioned previously, there are two broad classes of thresholding algorithm, *global* and *local*.
-It is expected that the segmentation performance of global thresholds will be worse than locally thresholded samples.
+The task to be completed by using image thresholding on a ultrasonic C-scan image is to separate the image into two classes, namely *defect* and *non defect*.
+This is a binary segmentation process.
+
+As mentioned previously, there are two broad classes of thresholding algorithm, *global* and *adaptive*.
+It is expected that the segmentation performance of global thresholds will be worse than adaptively thresholded samples, due to thickness differences.
 
 The main process to be followed in the thresholding segmentation pipeline is:
 

@@ -18,7 +18,7 @@ def plot_equalise() -> figure.Figure:
     ax[1].set_title("After global equalisation")
     global_equalised.plot(ax[1])
 
-    ax[2].set_title("After local equalisation")
+    ax[2].set_title("After adaptive equalisation")
     local_equalised.plot(ax[2])
 
     cb = fig.colorbar(plot, ax=ax, shrink=0.8, location="bottom")
