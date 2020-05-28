@@ -35,7 +35,9 @@ def _plot_groundtruth_transform() -> List[figure.Figure]:
     defect_pos_px = np.flip(defect_pos_px.values, axis=-1)
     defect_pos_mm = np.flip(defect_pos_mm.values, axis=-1)
 
-    model = transform.estimate_transform("affine", defect_pos_px, defect_pos_mm)
+    model: transform.AffineTransform = transform.estimate_transform(
+        "affine", defect_pos_px, defect_pos_mm
+    )
 
     grey = io.imread(definitions.DATA_DIR / "stepped.tiff")[:, :, 0]
     warped = transform.warp(grey, model.inverse, output_shape=(250, 800), cval=np.nan)
