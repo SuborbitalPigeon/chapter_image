@@ -9,6 +9,7 @@ description = "Image processing chapter"
 authors = ["Bruce Cowan <bruce.cowan@strath.ac.uk>"]
 
 [tool.poetry.dependencies]
+imagecodecs = "2020.2.18"
 python = "^3.7"
 matplotlib = "~3.2"
 numpy = "~1.18"
