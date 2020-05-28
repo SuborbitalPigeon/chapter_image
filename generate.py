@@ -39,7 +39,7 @@ def generate_image(func: Callable[[], figure.Figure], file_name: str) -> None:
 
     log.info(f"Generating {file_name}")
     fig = func()
-    fig.savefig(image_path)
+    fig.savefig(image_path, transparent=True)
 
 
 # Generate equalise image
