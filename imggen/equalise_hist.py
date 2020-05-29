@@ -8,7 +8,7 @@ import definitions
 def plot_equalise_hist() -> figure.Figure:
     img = cueimgproc.GreyImage.open(definitions.PROJECT_ROOT / "data" / "stepped.tiff")
 
-    fig, ax = plottools.create_subplots((7, 2.5), ncols=3, sharex="all", sharey="all")
+    fig, ax = plottools.create_subplots(0.3, ncols=3, sharex="all", sharey="all")
 
     histogram.plot_histogram(img.grey, ax[0])
     ax[0].set(title="Original image")

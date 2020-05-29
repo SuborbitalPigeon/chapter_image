@@ -29,13 +29,12 @@ def _do_plotting(
     fig.colorbar(thresh_plot, ax=ax[1])
 
     histogram.plot_histogram(img.grey, ax[2])
-    ax[2].set(title="Histogram", xlabel="Value", ylabel="Frequency")
 
     return filter.threshold_value
 
 
 def plot_global_threshold() -> figure.Figure:
-    fig, ax = plottools.create_subplots((6, 4), 3)
+    fig, ax = plottools.create_subplots(0.7, 3)
 
     value = _do_plotting(fig, ax, cueimgproc.ThresholdType.OTSU)
     ax[2].axvline(value, color="red")
@@ -43,8 +42,8 @@ def plot_global_threshold() -> figure.Figure:
     return fig
 
 
-def plot_local_threshold() -> figure.Figure:
-    fig, ax = plottools.create_subplots((6, 5), 4)
+def plot_adaptive_threshold() -> figure.Figure:
+    fig, ax = plottools.create_subplots(1, 4)
 
     value = _do_plotting(fig, ax, cueimgproc.ThresholdType.SAUVOLA)
     ax[2].hist(value.ravel(), bins="auto", color="red", alpha=0.5)

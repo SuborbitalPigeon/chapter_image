@@ -1,8 +1,9 @@
-adaptive_threshold.png
-affine.png
-equalise.png
-equalise_hist.png
-global_threshold.png
-groundtruth_error.png
-groundtruth_transform.png
-sobel.png
+adaptive_threshold.svg
+affine.svg
+all_threshold.svg
+equalise.svg
+equalise_hist.svg
+global_threshold.svg
+groundtruth_error.svg
+groundtruth_transform.svg
+sobel.svg

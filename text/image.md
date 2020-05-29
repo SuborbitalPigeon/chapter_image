@@ -37,7 +37,7 @@ The question to be answered by the end of this chapter becomes 'is it possible f
 <!-- Forget about time-varying stuff here? -->
 
 A *digital image* can be represented as a matrix of values.
-This matrix can be 2D in the case of a grey-scale image, 3D in the case of a multi-channel image or a set of greyscale images; or 4D for a set of multi-channel images.
+This matrix can be 2D in the case of a greyscale image, 3D in the case of a multi-channel image or a set of greyscale images; or 4D for a set of multi-channel images.
 Sets of images are often used to represent a variable time.
 
 A *greyscale* image represents the values of a single variable (often lightness) in a spatial scene.
@@ -95,7 +95,7 @@ However, for photographic purposes, this often causes displeasing results.
 
 ## C-scans
 
-<!-- ![An example A-scan](images/ascan.png){#fig:ascan} -->
+<!-- ![An example A-scan](images/ascan.svg){#fig:ascan} -->
 
 An ultrasound signal can be represented in the time domain in an *A-scan*.
 An A-scan shows the amplitude of the ultrasound response with respect to the time since the pulse was sent.
@@ -140,20 +140,20 @@ This section contains details of different image processing techniques.
 
 ## Image transforms
 
-In this section, *general image transforms* refers to operations which affect the dimensions and shape of the image matrix.
+In this section, *general image transforms* refers to operations which affect the shape, position and dimensions of the image.
 This includes the following *affine transformations*:
 
-* Scaling
 * Translation
+* Scaling
 * Rotation
 * Shear
 
-Move generalised warps can be performed using a *projective transform*, whereby the 'corners' of the image can be moved in the $xy$ plane.
+Move generalised image warping can be performed using a *projective transform*, whereby the corners of the image can be moved to any position in the $xy$ plane.
+These operations can be performed by the application of $3 \times 3$ transformation matrices.
+By making use of such matrices, it is possible to chain together several operations which can be applied by using a single matrix multiplication.
 
-All the operations discussed in this section can be performed by the application of $3 \times 3$ transformation matrices.
-By making use of such matrices, it is possible to chain together several operations to be applied by a single matrix multiplication.
-
-The output pixel coordinates are found by multiplying the input coordinates by the transformation matrix, after converting the input coordinates to homogeneous ones (i.e. $[x, y, 1]^T$).
+The coordinates of the output image can be found by multiplying the input coordinates by the transformation matrix.
+The input coordinates must be converted to *homogeneous coordinates* for the multiplication to be possible (i.e. $[x, y, 1]^T$).
 
 ### Translation
 
@@ -163,13 +163,12 @@ It can be represented by the following matrix [@vanderwalt_scikitimage_2014]:
 $$
 T =
 \begin{bmatrix}
-  0 & 0 & t_x \\
-  0 & 0 & t_y \\
+  1 & 0 & t_x \\
+  0 & 1 & t_y \\
   0 & 0 & 1 \\
 \end{bmatrix}
 $$
 where $t_x$ and $t_y$ are the movements in the $x$ and $y$ axes respectively.
-Positive values of $x$ shift the origin to the left, and positive $y$ shift it upwards.
 
 ### Scaling
 
@@ -184,7 +183,7 @@ T =
   0   & 0   & 1 \\
 \end{bmatrix}
 $$
-where $s_x$ and $s_y$ are the scaling factors (values $\lt 1$ denote scaling up) in the $x$ and $y$ directions respectively.
+where $s_x$ and $s_y$ are the scaling factors (values $\gt 1$ denote scaling up) in the $x$ and $y$ directions respectively.
 
 It is common in image processing to reduce the size of images in order to speed up more complex operations later in the processing pipeline.
 In the early days of digital photography, it was quite common for digital cameras to *upscale* their output images in order to achieve more marketable *megapixel* counts.
@@ -202,11 +201,11 @@ T =
   0           & 0            & 1 \\
 \end{bmatrix}
 $$
-where $\theta$ is the rotation angle referred to the positive $x$ axis (in radians).
+where $\theta$ is the anti-clockwise rotation angle referred to the positive $x$ axis (in radians).
 
 <!-- It is common in photography to convert between portrait and landscape orientation of photographs^[Also for the far too often required conversion of vertically phone-captured videos to landscape for display on non-phone devices], this requires a positive or negative rotation of 90°. -->
 
-It should be noted that this matrix refers to a rotation with a pivot point of the origin point of the image (top-left).
+It should be noted that this matrix refers to a rotation where the pivot point is the origin point of the image (top-left).
 In order to use another pivot point, a translation procedure must also be performed.
 
 ### Shear
@@ -219,8 +218,8 @@ It can be represented by the following matrix:
 $$
 T =
 \begin{bmatrix}
-  0 & \sin \phi & 1 \\
-  0 & 0         & 0 \\
+  1 & \sin \phi & 1 \\
+  0 & \cos \phi & 0 \\
   0 & 0         & 1 \\
 \end{bmatrix}
 $$
@@ -234,8 +233,8 @@ By chaining these simple operations together, the combined transform matrix can 
 $$
 T = 
 \begin{bmatrix}
-  S_x \cos \theta & - S_y \sin (\theta + \phi) & t_x \\
-  S_x \sin \theta &   S_y \cos (\theta + \phi) & t_y \\
+  s_x \cos \theta & -s_y \sin (\theta + \phi) & t_x \\
+  s_x \sin \theta &  s_y \cos (\theta + \phi) & t_y \\
   0               & 0                          & 1   \\
 \end{bmatrix}
 $$
@@ -244,12 +243,12 @@ where the symbols have the same meanings as defined previously.
 It is also possible to perform more general operations, such as a *projective transform*, which allows the possibility of freely moving the corners of the image in $xy$ space.
 A projective transform matrix can be constructed from that of an affine transform.
 
-![An example affine transform](images/affine.png){#fig:affine}
+![An example affine transform](images/affine.svg){#fig:affine}
 
 The image shown in [@fig:affine] shows an example of an affine transform, which includes:
 
-* Scale factor of 1.3 in $x$, and 1.5 in $y$.
-* Rotation of 30°.
+* Scale factor of 0.7 in $x$, and 0.6 in $y$.
+* Rotation of 15°.
 * Shear of -30°.
 * Translation of 50 pixels right and 300 pixels down.
 
@@ -285,11 +284,13 @@ The parameters of the model with the highest number of inliers is chosen as the 
 
 ### Filtering and boundary modes
 
-The pixels which make up an image are located at integer coordinate values.
+The pixels which make up an image are located at integer coordinates.
 By applying geometric transforms, it is highly likely the new locations of pixels would ideally be at floating-point coordinates, which is not possible due to the matrix representations of images, so a *filtering* algorithm must be applied.
 
-The simplest technique is to assign the ideal floating-point pixel value to the nearest pixel in the output image.
+The simplest technique is to assign each output pixel to the *nearest* floating-point position.
 This can result in significant artefacts (for example, severe aliasing for small angle rotations), and so more complex methods such as *linear* or *cubic* filtering can be used, which interpolate between the floating-point coordinate values to generate the output pixels.
+
+<!-- Does this bit belong here? -->
 
 Image processing techniques which make use of matrices have a problem when being run on pixels at the edges of an image, due to the fact that not all the neighbourhood pixels exist.
 To deal with this problem, the image is temporarily resized by a few pixels.
@@ -299,7 +300,7 @@ The values of the newly-created pixels can be set in different ways, for example
 
 An image's *histogram* is a representation of the frequency of pixel values in the image.
 
-For an ideally exposed photograph, the full range of possible pixel values would appear, and would have equal frequency.
+In an ideal image, the full range of possible pixel values would appear, and would have equal frequency.
 
 ### Tone curves
 
@@ -310,18 +311,18 @@ Normally, curves are only applied to the lightness channel of colour images, as 
 
 ### Histogram equalisation {#sec:histographequalisation}
 
-![Original image, and after the application of global and adaptive equalisation](images/equalise.png){#fig:equalise}
+![Original image, and after the application of global and adaptive equalisation](images/equalise.svg){#fig:equalise}
 
 *Histogram equalisation* is a process whereby the values are modified to create as close to a flat histogram as possible.
-This is achieved by increasing the distance between values assigned to more common input values.
+This is achieved by increasing the distance between values assigned to the most common input values.
 This is a way of improving the contrast in an image, and is useful for image processing for scientific purposes.
-It however leads to poor quality results for photographs, as it is a simplistic operation.
+It however leads to poor quality results for photographs.
 
 See [@fig:equalise] for an example of an ultrasound C-scan before and after equalisation, both global and adaptive.
 In this case, the block size for the adaptive equalisation is such that the image is split into 8 × 8 blocks.
 It can be seen that the contrast between the background, and the defects is higher, especially in the case of the image which has undergone local equalisation.
 
-![Histograms of image, and after global and adaptive equalisation](images/equalise_hist.png){#fig:equalise_hist}
+![Histograms of image, and after global and adaptive equalisation](images/equalise_hist.svg){#fig:equalise_hist}
 
 See [@fig:equalise_hist] for histograms of the original image, and after the application of global and adaptive equalisation.
 It can be seen that the pixel values in the original images are predominantly that of the five background steps of the sample, as can be expected.
@@ -396,7 +397,7 @@ There are several algorithms which can be used for this, but they can be grouped
 Global methods find a single value for the threshold based on the whole image's histogram.
 Adaptive methods use separate threshold values for each pixel in the image, making use of a pixel's neighbourhood.
 
-![Global thresholding example](images/global_threshold.png){#fig:global_threshold}
+![Global thresholding example](images/global_threshold.svg){#fig:global_threshold}
 
 An example of a global threshold being applied to a C-scan is shown in [@fig:global_threshold], specifically the *Otso* algorithm.
 This finds the optimal threshold based by minimising the interclass variance^[Get a reference for this].
@@ -404,12 +405,12 @@ This finds the optimal threshold based by minimising the interclass variance^[Ge
 The red line shown in the histogram indicates the threshold that has been chosen.
 As can be seen in the binary image, this algorithm has not performed well.
 This is due to the fact that the threshold has been chosen such that an equal number of peaks have been separated.
-It so happens that the value of the pixels which make up defects on the first two steps of the part have sufficently low values to be below the threshold.
-However the background of the third, fourth and fifth steps are also below this threshold.
+It happens that the value of the pixels which make up defects on the first two steps of the part have sufficently low values to be below the threshold.
+However, the background of the third, fourth and fifth steps are also below this threshold.
 
 It is expected that an algorithm which makes use of local information would yield better results for C-scan images of parts of differing thickness such as this.
 
-![Adaptive thresholding example](images/adaptive_threshold.png){#fig:adaptive_threshold}
+![Adaptive thresholding example](images/adaptive_threshold.svg){#fig:adaptive_threshold}
 
 Shown in [@fig:adaptive_threshold] is a demonstration of the application of a adaptive thresholding algorithm, in this case *Sauvola* [@sauvola_adaptive_2000].
 What is immediately obvious is that the defect segmentation performance using this method is much better, as it deals with the varying background values.
@@ -437,7 +438,7 @@ The purpose of *edge detection* is to find the pixels which represent significan
 The simplest way to achieve this is to find the derivative of the pixels in a region.
 Due to the discrete grid-like nature of images, the derivative must be approximated by a $3 \times 3$ matrix which is convolved with the image.
 
-![Demonstration of the Sobel operator](images/sobel.png){#fig:sobel}
+![Demonstration of the Sobel operator](images/sobel.svg){#fig:sobel}
 
 Horizontal and vertical edges can be detected separately using two different convolution matrices.
 The resultant edge responses can then be used to find a total edge magnitude and edge direction.
@@ -502,11 +503,53 @@ Details of how C-scans are generated from the underlying data.
 Things about VIEWS and how the gating parameters work and so on.
 -->
 
-# Previous work on image processing for finding defects
+# Previous work on image processing for defect recognition
 
-<!---
-This section will contain details of previous work on this problem.
--->
+## Chang et al., 2003
+
+This work concerns the detection of breast tumours from ultrasound images.
+A comparison was carried out between the use of SVM and a neural network setup.
+A database of 250 images was compiled, which contained 140 of benign tumours and 110 of cancerous, where each image only contained the tumour area.
+
+The features which were extracted from the images were texture-based features, namely autocorrelation and autocovariance.
+An SVM model was trained and tested using the $k$-fold method with $k$ in this case being set to 5.
+A neural network model was also trained using the sample process for testing.
+It was noted that the classification performance of these two methods was comparable, but SVM took significantly less time to go through the training process.
+
+It should be noted that it is not possible to assign a class probability to a sample using the SVM method.
+This is due to how SVM works, where an optimal dividing hyperplane is found to separate two classes, and a sample's class is decided by which side of the plane it is on.
+
+## Belaid et al., 2011
+
+The main innovation of this work is the use of the *monogenic signal* rather than the commonly-used Hilbert transform for separating amplitude and phase information in order to generate ultrasonic C-scans.
+This was shown to improve edge detection performance at the cost of reducing the detail components of the images.
+
+## Kechida et al., 2012
+
+Weld inspection using TOFD was the target for this research.
+The approach used was to make use of texture information.
+Multiresolution methods (wavelet decomposition), Gabor functions, PCA and a form of clustering (called c-means) were employed.
+The end result was to carry out a binary classification (defect or no defect).
+
+The images were first separated into small windows, and these were decomposed into four detail levels using wavelet decomposition.
+2D Gabor functions were also used to perform this decomposition process.
+Several statistics were extracted from each of the level, specifically:
+
+1. Angular moment, second order
+2. Contrast
+3. Inverse difference moment
+4. Sum mean
+5. Entropy
+
+PCA was then carried out to reduce the amount of data generated from the extracted features.
+Once this dimensionality reduction has been carried out, a fuzzy c-means clustering method was applied.
+C-means is similar to *k*-means, however a given point can be a member of multiple classes (a probability is assigned to them).
+
+By varying the size of the image windows used, the performance of the method will vary according to the size of defects to be found.
+It was noted that larger windows will increase the processing time required.
+Different wavelet methods were used, and the performance of the classification was found to be invariant to the chosen technique.
+The number of PCA components was also optimised to provide good classification performance with an acceptable processing time.
+It was concluded that wavelets would be more useful due to the possibility of adding defect sizing using this method.
 
 # Application of image processing to C-scan images
 
@@ -533,7 +576,31 @@ The main process to be followed in the thresholding segmentation pipeline is:
 4. Separate regions of connected high-valued pixels into labelled regions
 5. Calculate properties of these regions (specifically centroid, area, eccentricity, perimeter)
 
-Using these steps, 
+![Comparison of thresholding methods](images/all_threshold.svg){#fig:threshold_compare}
+
+Shown in [@fig:threshold_compare] is a comparison between all the thresholding algorithms which are available in the `scikit-image` image processing package.
+This includes both global and adaptive methods, where the adaptive methods can be identified by the indication of an *average threshold*, which is the simple mean of the individual pixel thresholds.
+Given that the expected number of defects in the sample is 30, it can be seen that the *Sauvola* algorithm has performed the best in this case.
+This so happens to be a adaptive thresholding algorithm.
+
+The Sauvola technique was intended to be used for the binarisation of images of documents, to segment text from a background [@sauvola_adaptive_2000].
+Perhaps its good performance on defect segmentation can be explained by defects being relatively small spots on a large background, somewhat like text on a page.
+A window surrounding each pixel is analysed in order to determine the pixel's threshold value.
+
+The pixel thresholds are set by the following:
+
+$$
+T(x, y) = m(x, y) \left[ 1 + k \left( \frac{s(x, y)}{R} - 1 \right) \right]
+$$
+where $m(x, y)$ is the window mean, $s(x, y)$ is the window standard deviation; and $k$, $R$ are parameters.
+
+<!-- What do these parameters do? -->
+
+The particular parameters used in the application of Sauvola in [@fig:threshold_compare] were:
+
+* A window size of 15
+* $k$ of 0.2
+* $R$ of 0.5 (i.e. the half point of the 0-1 floating-point pixel value range)
 
 ## Edge detection
 
@@ -562,7 +629,7 @@ Using the engineering drawing, the positions of defects were determined.
 It is then required to find the corresponding points in the C-scan, and use these two matrices to calculate the image transformation required to reproject the image into physical coordinates.
 To produce a *ground truth*, a binary image was created manually, with the defect pixels being marked by hand.
 The C-scan showed no sign of the defect in the third row and third column, hence why it is not displayed.
-Using scikit-image, the properties of these regions were determined, with the intention of finding the centroids.
+Using `scikit-image`, the properties of these regions were determined, with the intention of finding the centroids.
 Making use of these centroids and the expected defect locations in mm, an affine transformation matrix was found using a least-squares method:
 
 $$
@@ -576,15 +643,15 @@ which corresponds to:
 
 * Translation $(t_x, t_y) = (8.72, 76.6)$ mm.
 * Scale $(s_x, s_y) = (0.662, 0.625)$ mm/px.
-* Rotation $\theta = 0.173°$z
+* Rotation $\theta = 0.173°$.
 * Shear $\phi = 0.501°$.
 
-![Estimated transform with errors](images/groundtruth_transform.png){#fig:groundtruth_transform}
+![Estimated transform with errors](images/groundtruth_transform.svg){#fig:groundtruth_transform}
 
 When finding this transformation, the points will have certain errors with respect to the ideal locations.
 An image which shows these points with these errors is shown in [#fig:groundtruth_transform].
 
-![Estimated transform errors](images/groundtruth_error.png){#fig:groundtruth_error}
+![Estimated transform errors](images/groundtruth_error.svg){#fig:groundtruth_error}
 
 The values of these errors are shown in a histogram in [#fig:groundtruth_error].
 
