@@ -10,7 +10,7 @@ def plot_equalise() -> figure.Figure:
     global_equalised = img.apply_filter(cueimgproc.EqualiseFilter(False))
     local_equalised = img.apply_filter(cueimgproc.EqualiseFilter(True))
 
-    fig, ax = plottools.create_subplots((5, 4), 3)
+    fig, ax = plottools.create_subplots(0.85, 3, sharex="all")
 
     ax[0].set_title("Original image")
     plot = img.plot(ax[0])
@@ -21,7 +21,7 @@ def plot_equalise() -> figure.Figure:
     ax[2].set_title("After adaptive equalisation")
     local_equalised.plot(ax[2])
 
-    cb = fig.colorbar(plot, ax=ax, shrink=0.8, location="bottom")
+    cb = fig.colorbar(plot, ax=ax, fraction=0.2, location="bottom")
     cb.set_label("Scale common to all images")
 
     return fig

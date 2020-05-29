@@ -42,7 +42,7 @@ def _plot_groundtruth_transform() -> List[figure.Figure]:
     grey = io.imread(definitions.DATA_DIR / "stepped.tiff")[:, :, 0]
     warped = transform.warp(grey, model.inverse, output_shape=(250, 800), cval=np.nan)
 
-    warp_fig, warp_ax = plottools.create_subplots((7, 3))
+    warp_fig, warp_ax = plottools.create_subplots(0.35)
     warp_ax.set(title="Full part", xlabel="x (mm)", ylabel="y (mm)")
     warp_ax.imshow(warped)
 
@@ -69,7 +69,7 @@ def _plot_groundtruth_transform() -> List[figure.Figure]:
     log.info(f"Shear is {model.shear:.3g}")
     log.info(f"Rotation is {model.rotation:.3g} rad")
 
-    distribution_fig, distribution_ax = plottools.create_subplots((4, 2.5))
+    distribution_fig, distribution_ax = plottools.create_subplots(0.4)
 
     sns.distplot(error_norm, ax=distribution_ax, hist=False, rug=True)
     distribution_ax.set_xlim(0, distribution_ax.get_xlim()[1])

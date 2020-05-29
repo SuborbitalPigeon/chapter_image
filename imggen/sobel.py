@@ -15,7 +15,8 @@ def plot_sobel() -> figure.Figure:
     amplitude = edges.edge_magnitude
     direction = edges.edge_direction * (180.0 / np.pi)
 
-    fig, axs = plottools.create_subplots((9, 5), 2, 3)
+    fig, axs = plottools.create_subplots(0.45, 2, 3)
+    plottools.remove_ticks(axs)
 
     spiral_plot = img.plot(axs[0, 0], cmap="Greys")
     axs[0, 0].set(title="Image")
@@ -30,7 +31,7 @@ def plot_sobel() -> figure.Figure:
     fig.colorbar(h_plot, ax=axs[0, 2])
 
     amp_plot = axs[1, 1].imshow(amplitude, cmap="Greys")
-    axs[1, 1].set(title="Edge magnitude")
+    axs[1, 1].set(title="Magnitude")
     fig.colorbar(amp_plot, ax=axs[1, 1])
 
     dir_plot = axs[1, 2].imshow(
@@ -39,7 +40,7 @@ def plot_sobel() -> figure.Figure:
         interpolation="nearest",
         norm=colors.Normalize(-180.0, 180.0),
     )
-    axs[1, 2].set(title="Sobel edge direction")
+    axs[1, 2].set(title="Direction")
     dir_cb = fig.colorbar(dir_plot, ax=axs[1, 2])
     dir_cb.set_label("Degrees")
 
