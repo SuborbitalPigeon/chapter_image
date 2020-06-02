@@ -12,7 +12,7 @@ _log = logging.getLogger(__name__)
 
 
 def plot_affine() -> figure.Figure:
-    img = io.imread(definitions.PROJECT_ROOT / "data" / "monkey.jpg")
+    img = io.imread(definitions.PROJECT_ROOT / "data" / "monkey.tiff")
     affine = transform.AffineTransform(
         scale=(0.8, 0.6), rotation=np.pi / 12, shear=-np.pi / 6, translation=(50, 10)
     )

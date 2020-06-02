@@ -9,6 +9,8 @@ from matplotlib import figure
 from imggen import (
     affine,
     all_threshold,
+    decompose,
+    denoise,
     equalisation,
     equalise_hist,
     groundtruth_transform,
@@ -47,6 +49,12 @@ def generate_image(func: Callable[[], figure.Figure], file_name: str) -> None:
 generate_image(threshold.plot_adaptive_threshold, "adaptive_threshold.svg")
 generate_image(affine.plot_affine, "affine.svg")
 generate_image(all_threshold.plot_all_thresholds, "all_threshold.svg")
+generate_image(decompose.plot_wavelet_decompose, "decompose.svg")
+generate_image(denoise.plot_denoise_all, "denoise_all.svg")
+generate_image(denoise.plot_denoise_gauss, "denoise_gauss.svg")
+generate_image(denoise.plot_denoise_median, "denoise_median.svg")
+generate_image(denoise.plot_denoise_nlmeans, "denoise_nlmeans.svg")
+generate_image(denoise.plot_denoise_wavelet, "denoise_wavelet.svg")
 generate_image(equalisation.plot_equalise, "equalise.svg")
 generate_image(equalise_hist.plot_equalise_hist, "equalise_hist.svg")
 generate_image(threshold.plot_global_threshold, "global_threshold.svg")
