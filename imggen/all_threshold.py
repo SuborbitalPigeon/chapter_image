@@ -29,6 +29,6 @@ def plot_all_thresholds() -> figure.Figure:
 
         ax[i].set_title(f"{t.name.title()}\n{thresh_str}")
 
-        binary.plot(ax[i], cmap="Set1")
+        binary.plot(ax[i], cmap="binary")
 
     return fig

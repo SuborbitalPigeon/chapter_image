@@ -24,7 +24,7 @@ def _do_plotting(
     ax[0].set(title="Original image")
     fig.colorbar(original_plot, ax=ax[0])
 
-    thresh_plot = threshed.plot(ax[1], cmap=plt.cm.get_cmap("viridis", 2))
+    thresh_plot = threshed.plot(ax[1], cmap="binary")
     ax[1].set(title=f"Image after {threshold_type.name.capitalize()} thresholding")
     fig.colorbar(thresh_plot, ax=ax[1])
 
