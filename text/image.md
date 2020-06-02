@@ -338,31 +338,34 @@ It is a by-product of several physical phenomena, such as electrically generated
 In digital photography, noise is a particular problem with images taken with high ISO values (higher amplifier gains), which can be required in low-light situations.
 The pixel values are amplified according to the camera's ISO setting, which has the by-product of reducing the effective dynamic range of the camera.
 
+![A noisy image](images/noisy.png){#fig:noisy}
+
 An example of an image with noise is shown in [@fig:noisy].
+Random colour noise can be seen in this image, as a result of the high gain which was used when taking this photograph, due to the dark conditions.
 
-<!---
-![A noisy image](images/noise.jpg)
--->
-
-In ultrasound C-scans, noise appears as a result of the gain applied to the underlying A-scans for each pixel.
-Also, electrical noise present in the A-scans will have an effect.
+In ultrasound C-scans, noise appears as a result of the gain applied to the underlying A-scans.
+Electrical noise present in the acquisition hardware will also have an effect.
 
 Noise can be reduced using several methods.
 Some of these are described in the following sections.
 
 ### Median filtering
 
+![Example of median filtering](images/denoise_median.svg){#fig:median}
+
 For this technique, a simple statistical test is applied to the neighbourhood of each pixel in the input image.
 The value that each pixel is set to in the output image is the median value of this pixel's neighbourhood.
-This therefore rejects random high and low values in the neighbourhood.
-By making the region larger, it is possible to increase the effect.
+This therefore rejects random high and low values in each neighbourhood.
+By making the region larger, it is possible to increase the strength of the smoothing effect.
 
-The image must first be padded to remove the problem at the edges.
+The image must first be padded to remove the problem of not having enough pixels to form neighbourhoods at the edges of the image.
 
 This is a very simple operation, and performs relatively poorly as it has a strong blurring effect on the image.
 However, it is computationally cheap to perform.
 
 ### Blurring
+
+![Example of Gaussian blurring](images/denoise_gauss.svg){#fig:gauss}
 
 A *blur* operation is the equivalent to a low-pass filter in signal processing.
 Each pixel in the output image becomes a weighted average of the surrounding pixels.
@@ -372,20 +375,29 @@ Such matrices are digital approximations to the function $G(x, y) = \frac{1}{2 \
 The size of the matrix is dependent upon $\sigma$, in order to achieve an acceptable approximation.
 It is possible to convert this 2D convolution into the application of two 1D convolutions, which speeds up the implementation.
 
-<!---
-Gaussian blurring
--->
-
 ### Non-local means denoising
 
+![Example of non-local means denoising](images/denoise_nlmeans.svg){#fig:nlmeans}
+
+The *non-local means* method also makes use of pixel regions.
+However, instead of considering the whole region for the averaging operation, it also takes into account the neighbourhood of these pixels.
+If the region is similar to the original pixel's region, then this pixel will be considered in the averaging operation.
+By doing this, the texture content of the image is retained [@buades_nonlocal_2005].
+
 ### Wavelet denoising
+
+![Example of wavelet denoising](images/denoise_wavelet.svg){#fig:wavelet}
 
 *Wavelet transforms* are a type of frequency domain transformation, similar in purpose to the Fourier Transform or Discrete Cosine Transform (DCT).
 They have particular advantages in the field of image processing, due to the fact they encode not only frequency data, but also time dependence [@gonzalez_digital_2002].
 
 By making use of wavelet decomposition (see [@sec:waveletdecompose] for further detail), it is possible to convert an image into a *pyramid* of separate images which contain different levels of detail.
-Noise is generally a variation between individual pixels, and this means that it will be most prominent in the most detailed level of an image pyramid.
-By running a smoothing algorithm on only the most detailed level, it is possible to reduce the noise of the image without having an effect on the general structure.
+Noise is generally a high-frequency variation between individual pixels, and this means that it will be most prominent in the most detailed level of an image pyramid.
+By running a smoothing algorithm (for example, one of the above or just reducing the amplitudes) on only the most detailed level(s), it is possible to reduce the noise of the image without having an effect on the general structure.
+
+### Comparison
+
+![Comparison of denoising methods](images/denoise_all.svg){#fig:denoise_all}
 
 ## Thresholding {#sec:thresholding}
 
@@ -491,6 +503,19 @@ Looking at the values of $\rho$ for corresponding values of $\theta$ across thes
 Finding circles and ellipses follows a similar process, however the parameters to be found are different.
 
 ## Wavelet decomposition {#sec:waveletdecompose}
+
+![Example of a wavelet decomposition](images/decompose.svg){#fig:decompose}
+
+A *wavelet decomposition* is a method which can be used to separate the differing frequency components in an image.
+This is very useful for noise reduction, as noise is mainly a high-frequency effect.
+An example decomposition is shown in [@fig:decompose].
+In this case, the 'Daubechies' with length 1 wavelet function was used.
+The top row presents the low frequency 'approximation', which looks similar to a blurred version of the original image.
+Going down the other rows are increasing 'levels', or detail components, where the higher the level are made up of higher frequencies.
+
+Recombining these individual levels, it is possible to recreate the original image.
+This is a useful technique for retouching images, as it enables the possibility to isolate edits to only certain frequency ranges without having an effect on the others.
+For example, by reducing the noise on only the highest levels of the decomposition, the denoising process does not affect the overall structure of the image.
 
 ## Region filling
 
