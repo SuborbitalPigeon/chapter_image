@@ -47,10 +47,11 @@ However, the commonly-used JPEG image storage format actually stores the image w
 This is to take advantage of the fact that the human vision system is more sensitive to changes in brightness than in colour.
 The colour channels are often stored at a lower resolution than the luma, and this can bring a 50 % savings in storage space of the image, before the main part of the JPEG compression algorithm is applied.
 
-Ultrasound data represents a single variable, and therefore images derived from it are greyscale.
-For the purposes of visual interest, many of these images in this chapter have been assigned colourmaps.
-These mappings between pixel value and colour are *perceptually uniform*, which means that there is a linear relation between value and pixel lightness.
+Ultrasound data represents a single variable, and therefore images derived from it are single-channel (greyscale).
+, many of these images in this chapter have been assigned colourmaps.
+These mappings between pixel value and colour are *perceptually uniform*, which means that there is a linear relation between underlying value and pixel lightness.
 This removes the biasses inherent in colourmaps which are often used for ultrasound visualisation^[For example, the infamous 'rainbow'], which can affect the effective contrast.
+It would be possible to just use greyscale, however the human vision can determine only about 30 shades of grey, but millions of colours [@nunez_optimizing_2018].
 
 ## Pixel connectivity
 
@@ -93,7 +94,7 @@ An ideally-exposed image would have an equal number of pixels for each value, an
 Flattening the histogram of an image can be achieved with histogram equalisation, and this is described in [@sec:histographequalisation].
 However, for photographic purposes, this often causes displeasing results.
 
-## C-scans
+## Ultrasonic C-scans
 
 <!-- ![An example A-scan](images/ascan.svg){#fig:ascan} -->
 
@@ -351,8 +352,6 @@ Some of these are described in the following sections.
 
 ### Median filtering
 
-![Example of median filtering](images/denoise_median.svg){#fig:median}
-
 For this technique, a simple statistical test is applied to the neighbourhood of each pixel in the input image.
 The value that each pixel is set to in the output image is the median value of this pixel's neighbourhood.
 This therefore rejects random high and low values in each neighbourhood.
@@ -365,8 +364,6 @@ However, it is computationally cheap to perform.
 
 ### Blurring
 
-![Example of Gaussian blurring](images/denoise_gauss.svg){#fig:gauss}
-
 A *blur* operation is the equivalent to a low-pass filter in signal processing.
 Each pixel in the output image becomes a weighted average of the surrounding pixels.
 
@@ -377,16 +374,12 @@ It is possible to convert this 2D convolution into the application of two 1D con
 
 ### Non-local means denoising
 
-![Example of non-local means denoising](images/denoise_nlmeans.svg){#fig:nlmeans}
-
 The *non-local means* method also makes use of pixel regions.
 However, instead of considering the whole region for the averaging operation, it also takes into account the neighbourhood of these pixels.
 If the region is similar to the original pixel's region, then this pixel will be considered in the averaging operation.
 By doing this, the texture content of the image is retained [@buades_nonlocal_2005].
 
 ### Wavelet denoising
-
-![Example of wavelet denoising](images/denoise_wavelet.svg){#fig:wavelet}
 
 *Wavelet transforms* are a type of frequency domain transformation, similar in purpose to the Fourier Transform or Discrete Cosine Transform (DCT).
 They have particular advantages in the field of image processing, due to the fact they encode not only frequency data, but also time dependence [@gonzalez_digital_2002].
@@ -398,6 +391,12 @@ By running a smoothing algorithm (for example, one of the above or just reducing
 ### Comparison
 
 ![Comparison of denoising methods](images/denoise_all.svg){#fig:denoise_all}
+
+Contained within [@fig:denoise_all] is a comparison of the different denoising methods when applied to the image of [@fig:noisy].
+Displayed alongside these are an indication of processor time taken to compute.
+The tuning parameters of each method have been set to achieve a similar level of denoising to each other, for the sake of visual comparison.
+
+It can be seen that the simple methods
 
 ## Thresholding {#sec:thresholding}
 
@@ -483,24 +482,20 @@ Its operation can be summarised as:
 
 ### Hough transform
 
-The Hough transform can be used to detect lines, circles or ellipses in an image (depending on the parameters used).
-The input is a boolean image (0 for no potential feature, 1 for a potential feature).
+The Hough transform can be used to detect lines, circles or ellipses in an image (depending on which parameters are used).
+In order to find these features, a boolean image is used (0 for no potential feature, 1 for a potential feature).
 
 A straight line can be parameterised as $y = mx + c$, however this has the problem of not being able to represent vertical lines (as $m = \infty$).
-Therefore, a polar form of a line ($x \cos \theta + y \sin \theta = \rho$) is used.
+Therefore, a polar form of a line ($x \cos \theta + y \sin \theta = \rho$) is used for the detection of lines.
 To find the potential values of $\rho$ and $\theta$, the following process is carried out [@duda_use_1972]:
 
 1. A positive pixel is chosen from the image.
-2. The parameters of potential lines which pass through this pixel are found.
-
-<!---
-This doesn't make sense
--->
+2. The parameters for potential lines which pass through this pixel are found, using other random positive pixels.
 
 These steps are followed for other positive pixels in the image.
-Looking at the values of $\rho$ for corresponding values of $\theta$ across these pixels, the best line will be chosen based on the similarity in $\rho$ value.
+Looking at the values of $\rho$ for corresponding values of $\theta$ across these pixels, the best-fitting line will be chosen based on the similarity in $\rho$ value.
 
-Finding circles and ellipses follows a similar process, however the parameters to be found are different.
+Finding circles and ellipses follows a similar process, however the parameters to be found are different (e.g. radius, position, eccentricity).
 
 ## Wavelet decomposition {#sec:waveletdecompose}
 
@@ -553,7 +548,7 @@ This was shown to improve edge detection performance at the cost of reducing the
 
 Weld inspection using TOFD was the target for this research.
 The approach used was to make use of texture information.
-Multiresolution methods (wavelet decomposition), Gabor functions, PCA and a form of clustering (called c-means) were employed.
+Multi-resolution methods (wavelet decomposition), Gabor functions, PCA and a form of clustering (called c-means) were employed.
 The end result was to carry out a binary classification (defect or no defect).
 
 The images were first separated into small windows, and these were decomposed into four detail levels using wavelet decomposition.
@@ -578,9 +573,17 @@ It was concluded that wavelets would be more useful due to the possibility of ad
 
 # Application of image processing to C-scan images
 
-<!---
-What has been done, reasoning behind why these methods and so on.
--->
+This section concerns the application of several of the image processing techniques detailed in [@sec:imageprocessing] to C-scan images.
+
+A common framework was created for image loading and processing, mainly based on the methods in the `scikit-image` Python package.
+The framework (`cueimgproc`) provides a consistent interface for image processing, and exposes a significant amount of image processing algorithms.
+`cueimgproc` is not specific to C-scan images, the only requirement is that greyscale images are used as input.
+
+The general principle of operation is that of *graphs of nodes*, i.e. an image is created, and several *filters* can be applied in turn to the image.
+Some of the nodes are so-called *filters*, which take an input image, and create an output which has been processed.
+Others are *transforms*, which take an input image and create several non-image outputs, these are often used for feature detection.
+
+For defect recognition purposes, several *pipelines* were created, and these are discussed in the following sections.
 
 ## Simple thresholding
 
@@ -627,6 +630,42 @@ The particular parameters used in the application of Sauvola in [@fig:threshold_
 * $k$ of 0.2
 * $R$ of 0.5 (i.e. the half point of the 0-1 floating-point pixel value range)
 
+### Pipeline
+
+![Results of thresholding pipeline](images/pipelines/threshold.svg){#fig:pipeline_threshold}
+
+The thresholding pipeline is a simple one, containing a single threshold filter.
+From the results of [@fig:threshold_compare], the Sauvola algorithm was chosen.
+
+Shown in [@fig:pipeline_threshold] are the results of this pipeline.
+The binary thresholded image is shown in the centre of this figure.
+By making use of connectivity information, it is possible to separate the different regions out.
+The image at the bottom of this figure show the results of the segmentation, where each region is shown in a different colour.
+
+Details of these regions are determined, including:
+
+* Centroid location in the image.
+* Area of region.
+* Shape of region (in terms of the eccentricity).
+* Perimeter of the region.
+
+The eccentricity is a measure of the circularity of the region.
+It is expected that defects have a low eccentricity, and are relatively small.
+By looking at [@fig:pipeline_threshold], it is possible to see that the *steps* between different depths are detected as separate regions.
+These have large areas, and are also rectangular, and therefore have high eccentricity.
+
+It can also be seen that numerous regions have been detected, many of which are very small, and due to noise in the C-scan.
+A simple method of removing these noise regions would be to add an area threshold, and reject regions which are smaller than a certain size.
+This can be viewed from the perspective of defining a necessary minimum defect size to reject in a part.
+Of course, the areas in C-scan images are measured in pixels, so it would require conversion from physical units to pixels through an appropriate factor.
+Also, applying a threshold on eccentricity values would be useful in order to remove large aspect ratio regions which are not likely to be defects.
+
+![Results of thresholding pipeline](images/pipelines/threshold_triple.svg){#fig:pipeline_threshold_triple}
+
+All together, this method could be regarded as three layers of thresholding, based on pixel value, region size and region shape.
+Adding these extra thresholds results in [@fig:pipeline_threshold_triple].
+Regions with areas less than 32 pixels are discarded, as are regions with eccentricities of over 0.9.
+
 ## Edge detection
 
 ## Region growing
@@ -660,8 +699,8 @@ Making use of these centroids and the expected defect locations in mm, an affine
 $$
 \begin{bmatrix}
   0.6618 & -0.0062 & 8.7165 \\
-  0.0020 & 0.5248 & 76.5579 \\
-  0.0000 & 0.0000 & 1.000 \\
+  0.0020 & 0.5248  & 76.5579 \\
+  0.0000 & 0.0000  & 1.000 \\
 \end{bmatrix}
 $$
 which corresponds to:

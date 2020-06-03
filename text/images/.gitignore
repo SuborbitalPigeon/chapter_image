@@ -2,10 +2,11 @@ adaptive_threshold.svg
 affine.svg
 all_threshold.svg
 decompose.svg
-denoise_*.svg
+denoise_all.svg
 equalise.svg
 equalise_hist.svg
 global_threshold.svg
 groundtruth_error.svg
 groundtruth_transform.svg
+pipelines/*
 sobel.svg

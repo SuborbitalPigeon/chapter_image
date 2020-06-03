@@ -4,7 +4,7 @@ build-backend = "poetry.masonry.api"
 
 [tool.poetry]
 name = "chapter-image"
-version = "0.1.0"
+version = "20200603"
 description = "Image processing chapter"
 authors = ["Bruce Cowan <bruce.cowan@strath.ac.uk>"]
 
