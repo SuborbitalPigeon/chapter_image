@@ -1,6 +1,6 @@
 from typing import Optional, Tuple, Union
 
-from matplotlib import axes, figure
+from matplotlib import axes, figure, gridspec
 from matplotlib import pyplot as plt
 import numpy as np
 
@@ -33,6 +33,11 @@ def create_subplots(
 
 
 def remove_ticks(ax: Union[axes.Axes, np.ndarray]) -> None:
+    """Remove ticks from an Axes or group of axes.
+
+    Args:
+        ax: Axis or group of them
+    """
     if isinstance(ax, np.ndarray):
         for axis in ax.flatten():
             remove_ticks(axis)

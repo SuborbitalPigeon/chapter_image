@@ -2,7 +2,7 @@ import inspect
 import logging
 import pathlib
 import subprocess
-from typing import Callable
+from typing import Any, Callable, Optional
 
 from matplotlib import figure
 
@@ -17,6 +17,7 @@ from imggen import (
     threshold,
     sobel,
 )
+from imggen.pipelines import threshold as pthreshold
 
 
 log = logging.getLogger(__name__)
@@ -27,7 +28,9 @@ IMG_OUT_DIR = SRC_DIR / "images"
 OUT_DIR = SRC_DIR / "out"
 
 
-def generate_image(func: Callable[[], figure.Figure], file_name: str) -> None:
+def generate_image(
+    func: Callable[[Optional[Any]], figure.Figure], file_name: str, **kwargs: Any
+) -> None:
     image_path = IMG_OUT_DIR / file_name
 
     try:
@@ -41,26 +44,27 @@ def generate_image(func: Callable[[], figure.Figure], file_name: str) -> None:
             return
 
     log.info(f"Generating {file_name}")
-    fig = func()
+    fig = func(**kwargs)
     fig.savefig(image_path, transparent=True)
 
 
-# Generate equalise image
+# Generate images
 generate_image(threshold.plot_adaptive_threshold, "adaptive_threshold.svg")
 generate_image(affine.plot_affine, "affine.svg")
 generate_image(all_threshold.plot_all_thresholds, "all_threshold.svg")
 generate_image(decompose.plot_wavelet_decompose, "decompose.svg")
 generate_image(denoise.plot_denoise_all, "denoise_all.svg")
-generate_image(denoise.plot_denoise_gauss, "denoise_gauss.svg")
-generate_image(denoise.plot_denoise_median, "denoise_median.svg")
-generate_image(denoise.plot_denoise_nlmeans, "denoise_nlmeans.svg")
-generate_image(denoise.plot_denoise_wavelet, "denoise_wavelet.svg")
 generate_image(equalisation.plot_equalise, "equalise.svg")
 generate_image(equalise_hist.plot_equalise_hist, "equalise_hist.svg")
 generate_image(threshold.plot_global_threshold, "global_threshold.svg")
 generate_image(groundtruth_transform.plot_error, "groundtruth_error.svg")
 generate_image(groundtruth_transform.plot_full_part, "groundtruth_transform.svg")
 generate_image(sobel.plot_sobel, "sobel.svg")
+
+# Pipeline images
+pipelines_dir = pathlib.Path("pipelines")
+generate_image(pthreshold.plot_threshold, pipelines_dir / "threshold.svg")
+generate_image(pthreshold.plot_extra_threshold, pipelines_dir / "threshold_triple.svg")
 
 # Generate text
 src_file = SRC_DIR / "image.md"

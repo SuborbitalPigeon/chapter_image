@@ -15,7 +15,7 @@ def plot_sobel() -> figure.Figure:
     amplitude = edges.edge_magnitude
     direction = edges.edge_direction * (180.0 / np.pi)
 
-    fig, axs = plottools.create_subplots(0.45, 2, 3)
+    fig, axs = plottools.create_subplots(0.5, 2, 3)
     plottools.remove_ticks(axs)
 
     spiral_plot = img.plot(axs[0, 0], cmap="Greys")

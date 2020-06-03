@@ -1,3 +1,4 @@
+import time
 from typing import Any, Callable
 
 from matplotlib import axes, colors, figure
@@ -18,10 +19,13 @@ def _plot_denoise(
     ax: axes.Axes, func: Callable, title="Denoised", **kwargs: Any
 ) -> None:
     img = _load_image()
+
+    start = time.process_time()
     denoised = func(img, **kwargs)
+    end = time.process_time()
 
     ax.imshow(denoised, norm=colors.Normalize(0.0, 1.0))
-    ax.set(title=title)
+    ax.set(title=f"{title}\nTime: {(end - start) * 1000.0:.0f} ms")
 
 
 def _plot_original(ax: axes.Axes) -> None:
@@ -29,54 +33,6 @@ def _plot_original(ax: axes.Axes) -> None:
 
     ax.imshow(data, norm=colors.Normalize(0.0, 1.0))
     ax.set(title="Original image")
-
-
-def plot_denoise_median() -> figure.Figure:
-    fig, axs = plottools.create_subplots(0.4, ncols=2, sharey="all")
-    plottools.remove_ticks(axs)
-
-    _plot_original(axs[0])
-
-    selem = np.ones((7, 7, 3))
-    _plot_denoise(axs[1], filters.median, selem=selem)
-
-    return fig
-
-
-def plot_denoise_gauss() -> figure.Figure:
-    fig, axs = plottools.create_subplots(0.4, ncols=2, sharey="all")
-    plottools.remove_ticks(axs)
-
-    _plot_original(axs[0])
-    _plot_denoise(axs[1], filters.gaussian, sigma=2, multichannel=True)
-
-    return fig
-
-
-def plot_denoise_nlmeans() -> figure.Figure:
-    fig, axs = plottools.create_subplots(0.4, ncols=2, sharey="all")
-    plottools.remove_ticks(axs)
-
-    _plot_original(axs[0])
-    _plot_denoise(axs[1], restoration.denoise_nl_means, multichannel=True, h=0.02)
-
-    return fig
-
-
-def plot_denoise_wavelet() -> figure.Figure:
-    fig, axs = plottools.create_subplots(0.4, ncols=2, sharey="all")
-    plottools.remove_ticks(axs)
-
-    _plot_original(axs[0])
-    _plot_denoise(
-        axs[1],
-        restoration.denoise_wavelet,
-        convert2ycbcr=True,
-        multichannel=True,
-        rescale_sigma=True,
-    )
-
-    return fig
 
 
 def plot_denoise_all() -> figure.Figure:
@@ -91,7 +47,9 @@ def plot_denoise_all() -> figure.Figure:
 
     _plot_original(ax_original)
     _plot_denoise(axs[1, 0], filters.median, "Median filter")
-    _plot_denoise(axs[1, 1], filters.gaussian, "Gaussian filter", multichannel=True)
+    _plot_denoise(
+        axs[1, 1], filters.gaussian, "Gaussian filter", multichannel=True, sigma=2.0
+    )
     _plot_denoise(
         axs[2, 0],
         restoration.denoise_nl_means,
