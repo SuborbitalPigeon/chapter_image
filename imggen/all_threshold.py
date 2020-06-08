@@ -7,7 +7,7 @@ from .routines import plottools
 
 
 def plot_all_thresholds() -> figure.Figure:
-    img = cueimgproc.GreyImage.open(definitions.DATA_DIR / "stepped.tiff")
+    img = cueimgproc.Image.open(definitions.DATA_DIR / "stepped.tiff")
 
     fig, ax = plottools.create_subplots(
         0.9, len(cueimgproc.ThresholdType) // 2, 2, sharex="all", sharey="all"

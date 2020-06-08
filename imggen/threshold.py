@@ -4,7 +4,6 @@ from typing import Union
 
 import cueimgproc
 from matplotlib import figure
-from matplotlib import pyplot as plt
 import numpy as np
 
 from .routines import histogram, plottools
@@ -14,7 +13,7 @@ import definitions
 def _do_plotting(
     fig: figure.Figure, ax: np.ndarray, threshold_type: cueimgproc.ThresholdType
 ) -> Union[float, np.ndarray]:
-    img = cueimgproc.GreyImage.open(definitions.DATA_DIR / "stepped.tiff")
+    img = cueimgproc.Image.open(definitions.DATA_DIR / "stepped.tiff")
     img = img.apply_filter(cueimgproc.RemoveAlphaFilter())
 
     filter = cueimgproc.ThresholdFilter(threshold_type)
@@ -28,7 +27,7 @@ def _do_plotting(
     ax[1].set(title=f"Image after {threshold_type.name.capitalize()} thresholding")
     fig.colorbar(thresh_plot, ax=ax[1])
 
-    histogram.plot_histogram(img.grey, ax[2])
+    histogram.plot_histogram(img.data, ax[2])
 
     return filter.threshold_value
 
@@ -49,7 +48,7 @@ def plot_adaptive_threshold() -> figure.Figure:
     ax[2].hist(value.ravel(), bins="auto", color="red", alpha=0.5)
     ax[2].set(xlabel="Value", ylabel="Frequency")
 
-    value_image = cueimgproc.GreyImage(value)
+    value_image = cueimgproc.Image(value)
     value_plot = value_image.plot(ax[3])
     ax[3].set(title="Threshold value")
     fig.colorbar(value_plot, ax=ax[3])

@@ -9,7 +9,7 @@ from .routines import plottools
 
 def plot_wavelet_decompose() -> figure.Figure:
     img = io.imread(definitions.DATA_DIR / "monkey.tiff")
-    img = cueimgproc.GreyImage.from_colour(img)
+    img = cueimgproc.Image.from_colour(img)
 
     decompose = cueimgproc.WaveletDecompose("db1", 3)
     decompose(img)

@@ -1,6 +1,6 @@
 from typing import Optional, Tuple, Union
 
-from matplotlib import axes, figure, gridspec
+from matplotlib import axes, figure
 from matplotlib import pyplot as plt
 import numpy as np
 
