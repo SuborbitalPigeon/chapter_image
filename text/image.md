@@ -96,7 +96,7 @@ However, for photographic purposes, this often causes displeasing results.
 
 ## Ultrasonic C-scans
 
-<!-- ![An example A-scan](images/ascan.svg){#fig:ascan} -->
+<!-- ![An example A-scan](images/ascan.png){#fig:ascan} -->
 
 An ultrasound signal can be represented in the time domain in an *A-scan*.
 An A-scan shows the amplitude of the ultrasound response with respect to the time since the pulse was sent.
@@ -244,7 +244,7 @@ where the symbols have the same meanings as defined previously.
 It is also possible to perform more general operations, such as a *projective transform*, which allows the possibility of freely moving the corners of the image in $xy$ space.
 A projective transform matrix can be constructed from that of an affine transform.
 
-![An example affine transform](images/affine.svg){#fig:affine}
+![An example affine transform](images/affine.png){#fig:affine}
 
 The image shown in [@fig:affine] shows an example of an affine transform, which includes:
 
@@ -312,7 +312,7 @@ Normally, curves are only applied to the lightness channel of colour images, as 
 
 ### Histogram equalisation {#sec:histographequalisation}
 
-![Original image, and after the application of global and adaptive equalisation](images/equalise.svg){#fig:equalise}
+![Original image, and after the application of global and adaptive equalisation](images/equalise.png){#fig:equalise}
 
 *Histogram equalisation* is a process whereby the values are modified to create as close to a flat histogram as possible.
 This is achieved by increasing the distance between values assigned to the most common input values.
@@ -323,7 +323,7 @@ See [@fig:equalise] for an example of an ultrasound C-scan before and after equa
 In this case, the block size for the adaptive equalisation is such that the image is split into 8 × 8 blocks.
 It can be seen that the contrast between the background, and the defects is higher, especially in the case of the image which has undergone local equalisation.
 
-![Histograms of image, and after global and adaptive equalisation](images/equalise_hist.svg){#fig:equalise_hist}
+![Histograms of image, and after global and adaptive equalisation](images/equalise_hist.png){#fig:equalise_hist}
 
 See [@fig:equalise_hist] for histograms of the original image, and after the application of global and adaptive equalisation.
 It can be seen that the pixel values in the original images are predominantly that of the five background steps of the sample, as can be expected.
@@ -390,7 +390,7 @@ By running a smoothing algorithm (for example, one of the above or just reducing
 
 ### Comparison
 
-![Comparison of denoising methods](images/denoise_all.svg){#fig:denoise_all}
+![Comparison of denoising methods](images/denoise_all.png){#fig:denoise_all}
 
 Contained within [@fig:denoise_all] is a comparison of the different denoising methods when applied to the image of [@fig:noisy].
 Displayed alongside these are an indication of processor time taken to compute.
@@ -408,7 +408,7 @@ There are several algorithms which can be used for this, but they can be grouped
 Global methods find a single value for the threshold based on the whole image's histogram.
 Adaptive methods use separate threshold values for each pixel in the image, making use of a pixel's neighbourhood.
 
-![Global thresholding example](images/global_threshold.svg){#fig:global_threshold}
+![Global thresholding example](images/global_threshold.png){#fig:global_threshold}
 
 An example of a global threshold being applied to a C-scan is shown in [@fig:global_threshold], specifically the *Otso* algorithm.
 This finds the optimal threshold based by minimising the interclass variance^[Get a reference for this].
@@ -421,7 +421,7 @@ However, the background of the third, fourth and fifth steps are also below this
 
 It is expected that an algorithm which makes use of local information would yield better results for C-scan images of parts of differing thickness such as this.
 
-![Adaptive thresholding example](images/adaptive_threshold.svg){#fig:adaptive_threshold}
+![Adaptive thresholding example](images/adaptive_threshold.png){#fig:adaptive_threshold}
 
 Shown in [@fig:adaptive_threshold] is a demonstration of the application of a adaptive thresholding algorithm, in this case *Sauvola* [@sauvola_adaptive_2000].
 What is immediately obvious is that the defect segmentation performance using this method is much better, as it deals with the varying background values.
@@ -449,7 +449,7 @@ The purpose of *edge detection* is to find the pixels which represent significan
 The simplest way to achieve this is to find the derivative of the pixels in a region.
 Due to the discrete grid-like nature of images, the derivative must be approximated by a $3 \times 3$ matrix which is convolved with the image.
 
-![Demonstration of the Sobel operator](images/sobel.svg){#fig:sobel}
+![Demonstration of the Sobel operator](images/sobel.png){#fig:sobel}
 
 Horizontal and vertical edges can be detected separately using two different convolution matrices.
 The resultant edge responses can then be used to find a total edge magnitude and edge direction.
@@ -499,7 +499,7 @@ Finding circles and ellipses follows a similar process, however the parameters t
 
 ## Wavelet decomposition {#sec:waveletdecompose}
 
-![Example of a wavelet decomposition](images/decompose.svg){#fig:decompose}
+![Example of a wavelet decomposition](images/decompose.png){#fig:decompose}
 
 A *wavelet decomposition* is a method which can be used to separate the differing frequency components in an image.
 This is very useful for noise reduction, as noise is mainly a high-frequency effect.
@@ -604,7 +604,7 @@ The main process to be followed in the thresholding segmentation pipeline is:
 4. Separate regions of connected high-valued pixels into labelled regions
 5. Calculate properties of these regions (specifically centroid, area, eccentricity, perimeter)
 
-![Comparison of thresholding methods](images/all_threshold.svg){#fig:threshold_compare}
+![Comparison of thresholding methods](images/all_threshold.png){#fig:threshold_compare}
 
 Shown in [@fig:threshold_compare] is a comparison between all the thresholding algorithms which are available in the `scikit-image` image processing package.
 This includes both global and adaptive methods, where the adaptive methods can be identified by the indication of an *average threshold*, which is the simple mean of the individual pixel thresholds.
@@ -632,7 +632,7 @@ The particular parameters used in the application of Sauvola in [@fig:threshold_
 
 ### Pipeline
 
-![Results of thresholding pipeline](images/pipelines/threshold.svg){#fig:pipeline_threshold}
+![Results of thresholding pipeline](images/pipelines/threshold.png){#fig:pipeline_threshold}
 
 The thresholding pipeline is a simple one, containing a single threshold filter.
 From the results of [@fig:threshold_compare], the Sauvola algorithm was chosen.
@@ -660,7 +660,7 @@ This can be viewed from the perspective of defining a necessary minimum defect s
 Of course, the areas in C-scan images are measured in pixels, so it would require conversion from physical units to pixels through an appropriate factor.
 Also, applying a threshold on eccentricity values would be useful in order to remove large aspect ratio regions which are not likely to be defects.
 
-![Results of thresholding pipeline](images/pipelines/threshold_triple.svg){#fig:pipeline_threshold_triple}
+![Results of thresholding pipeline](images/pipelines/threshold_triple.png){#fig:pipeline_threshold_triple}
 
 All together, this method could be regarded as three layers of thresholding, based on pixel value, region size and region shape.
 Adding these extra thresholds results in [@fig:pipeline_threshold_triple].
@@ -710,12 +710,12 @@ which corresponds to:
 * Rotation $\theta = 0.173°$.
 * Shear $\phi = 0.501°$.
 
-![Estimated transform with errors](images/groundtruth_transform.svg){#fig:groundtruth_transform}
+![Estimated transform with errors](images/groundtruth_transform.png){#fig:groundtruth_transform}
 
 When finding this transformation, the points will have certain errors with respect to the ideal locations.
 An image which shows these points with these errors is shown in [#fig:groundtruth_transform].
 
-![Estimated transform errors](images/groundtruth_error.svg){#fig:groundtruth_error}
+![Estimated transform errors](images/groundtruth_error.png){#fig:groundtruth_error}
 
 The values of these errors are shown in a histogram in [#fig:groundtruth_error].
 

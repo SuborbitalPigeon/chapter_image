@@ -49,26 +49,29 @@ def generate_image(
 
 
 # Generate images
-generate_image(threshold.plot_adaptive_threshold, "adaptive_threshold.svg")
-generate_image(affine.plot_affine, "affine.svg")
-generate_image(all_threshold.plot_all_thresholds, "all_threshold.svg")
-generate_image(decompose.plot_wavelet_decompose, "decompose.svg")
-generate_image(denoise.plot_denoise_all, "denoise_all.svg")
-generate_image(equalisation.plot_equalise, "equalise.svg")
-generate_image(equalise_hist.plot_equalise_hist, "equalise_hist.svg")
-generate_image(threshold.plot_global_threshold, "global_threshold.svg")
-generate_image(groundtruth_transform.plot_error, "groundtruth_error.svg")
-generate_image(groundtruth_transform.plot_full_part, "groundtruth_transform.svg")
-generate_image(sobel.plot_sobel, "sobel.svg")
+image_type = "png"
+
+generate_image(threshold.plot_adaptive_threshold, "adaptive_threshold." + image_type)
+generate_image(affine.plot_affine, "affine." + image_type)
+generate_image(all_threshold.plot_all_thresholds, "all_threshold." + image_type)
+generate_image(decompose.plot_wavelet_decompose, "decompose." + image_type)
+generate_image(denoise.plot_denoise_all, "denoise_all." + image_type)
+generate_image(equalisation.plot_equalise, "equalise." + image_type)
+generate_image(equalise_hist.plot_equalise_hist, "equalise_hist." + image_type)
+generate_image(threshold.plot_global_threshold, "global_threshold." + image_type)
+generate_image(groundtruth_transform.plot_error, "groundtruth_error." + image_type)
+generate_image(groundtruth_transform.plot_full_part, "groundtruth_transform." + image_type)
+generate_image(sobel.plot_sobel, "sobel." + image_type)
 
 # Pipeline images
 pipelines_dir = pathlib.Path("pipelines")
-generate_image(pthreshold.plot_threshold, pipelines_dir / "threshold.svg")
-generate_image(pthreshold.plot_extra_threshold, pipelines_dir / "threshold_triple.svg")
+generate_image(pthreshold.plot_threshold, pipelines_dir / "threshold.png")
+generate_image(pthreshold.plot_extra_threshold, pipelines_dir / "threshold_triple.png")
 
 # Generate text
 src_file = SRC_DIR / "image.md"
 
+# SVG doesn't work: https://github.com/jgm/pandoc/issues/4058
 log.info("Creating Word document")
 subprocess.run(
     [
@@ -83,23 +86,6 @@ subprocess.run(
         str(src_file),
         "-o",
         (str(OUT_DIR / "Image.docx")),
-    ]
-)
-
-log.info("Creating OpenDocument")
-subprocess.run(
-    [
-        "pandoc",
-        "-F",
-        "pandoc-crossref",
-        "-F",
-        "pandoc-citeproc",
-        "--reference-doc",
-        str(SRC_DIR / "num-reference.odt"),
-        f"--resource-path={SRC_DIR}",
-        str(src_file),
-        "-o",
-        (str(OUT_DIR / "Image.odt")),
     ]
 )
 
