@@ -13,7 +13,7 @@ def _do_plotting(img: cueimgproc.Image, regions: np.ma.MaskedArray) -> figure.Fi
     img.plot(ax[0])
     ax[0].set_title("Original image")
 
-    ax[1].imshow(np.invert(regions.mask))
+    ax[1].imshow(np.invert(regions.mask), cmap="binary")
     ax[1].set_title("Thresholded image")
 
     cmap = colors.ListedColormap(sns.husl_palette(len(np.unique(regions))).as_hex())
