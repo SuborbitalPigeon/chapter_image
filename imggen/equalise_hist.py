@@ -6,7 +6,7 @@ import definitions
 
 
 def plot_equalise_hist() -> figure.Figure:
-    img = cueimgproc.Image.open(definitions.PROJECT_ROOT / "data" / "stepped.tiff")
+    img = cueimgproc.Image.open(definitions.DATA_DIR / "stepped.tiff")
 
     fig, ax = plottools.create_subplots(0.3, ncols=3, sharex="all", sharey="all")
 

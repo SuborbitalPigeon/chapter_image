@@ -7,7 +7,7 @@ import definitions
 
 
 def plot_sobel() -> figure.Figure:
-    img = cueimgproc.Image.open(definitions.PROJECT_ROOT / "data" / "spiral.png")
+    img = cueimgproc.Image.open(definitions.DATA_DIR / "spiral.png")
 
     edges = cueimgproc.DirectionalEdgeDetector(cueimgproc.EdgeFilterType.SOBEL)
     edges(img)

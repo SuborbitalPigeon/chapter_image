@@ -6,7 +6,7 @@ import definitions
 
 
 def plot_equalise() -> figure.Figure:
-    img = cueimgproc.Image.open(definitions.PROJECT_ROOT / "data" / "stepped.tiff")
+    img = cueimgproc.Image.open(definitions.DATA_DIR / "stepped.tiff")
     global_equalised = img.apply_filter(cueimgproc.EqualiseFilter(False))
     local_equalised = img.apply_filter(cueimgproc.EqualiseFilter(True))
 
