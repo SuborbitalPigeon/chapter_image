@@ -24,11 +24,11 @@ def plot_error() -> figure.Figure:
 
 
 def _plot_groundtruth_transform() -> List[figure.Figure]:
-    defect_pos_px = pd.read_csv(definitions.DATA_DIR / "stepped-px.csv")
-    defect_pos_mm = pd.read_csv(definitions.DATA_DIR / "stepped-mm.csv")
+    defect_pos_px = pd.read_csv(definitions.DATA_DIR / "stepped-px.csv", index_col=0)
+    defect_pos_mm = pd.read_csv(definitions.DATA_DIR / "groundtruth_mm.csv", index_col=0)
 
     # Remove the missing defect from the mm points
-    defect_pos_mm = defect_pos_mm.drop(22)
+    defect_pos_mm = defect_pos_mm.loc[defect_pos_px.index]
 
     # See https://github.com/scikit-image/scikit-image/issues/1749 for why the axes are
     # flipped
