@@ -5,6 +5,7 @@ from typing import Union
 import cueimgproc
 from matplotlib import figure
 import numpy as np
+import seaborn as sns
 
 from .routines import histogram, plottools
 import definitions
@@ -23,7 +24,7 @@ def _do_plotting(
     ax[0].set(title="Original image")
     fig.colorbar(original_plot, ax=ax[0])
 
-    thresh_plot = threshed.plot(ax[1], cmap="binary")
+    thresh_plot = threshed.plot(ax[1])
     ax[1].set(title=f"Image after {threshold_type.name.capitalize()} thresholding")
     fig.colorbar(thresh_plot, ax=ax[1])
 
@@ -45,8 +46,8 @@ def plot_adaptive_threshold() -> figure.Figure:
     fig, ax = plottools.create_subplots(1, 4)
 
     value = _do_plotting(fig, ax, cueimgproc.ThresholdType.SAUVOLA)
-    ax[2].hist(value.ravel(), bins="auto", color="red", alpha=0.5)
-    ax[2].set(xlabel="Value", ylabel="Frequency")
+    sns.kdeplot(value.flatten(), ax=ax[2], label="Threshold")
+    ax[2].legend()
 
     value_image = cueimgproc.Image(value)
     value_plot = value_image.plot(ax[3])

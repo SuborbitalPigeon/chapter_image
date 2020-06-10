@@ -1,20 +1,15 @@
 from matplotlib import axes
 import numpy as np
-from skimage import exposure
+import seaborn as sns
 
 
-def plot_histogram(img: np.ndarray, ax: axes.Axes, nbins: int = 50) -> None:
+def plot_histogram(img: np.ndarray, ax: axes.Axes) -> None:
     """Find a histogram for an image, and plot it.
 
     Args:
         img: The image to find the histogram for.
         ax: The Axes to place the histogram graph into.
-        nbins: The number of bins to use.
     """
-    # noinspection PyTypeChecker
-    hist, bin_centres = exposure.histogram(img, nbins)
-    container = ax.stem(bin_centres, hist, markerfmt=".", use_line_collection=True)
-    ax.set(xlim=(0.0, 1.0), xlabel="Value", ylabel="Frequency")
+    sns.kdeplot(img.flatten(), ax=ax, label="Image values")
+    ax.set(xlim=(0.0, 1.0), xlabel="Value", ylabel="Relative frequency")
     ax.set_ylim(0.0)
-
-    container.stemlines.linewidth = 0.5
