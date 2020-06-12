@@ -28,7 +28,11 @@ def _do_plotting(img: cueimgproc.Image, regions: np.ma.MaskedArray) -> figure.Fi
 
 def plot_threshold() -> figure.Figure:
     img = cueimgproc.Image.open(definitions.DATA_DIR / "stepped.tiff")
-    binary = img.filter(cueimgproc.ThresholdFilter(cueimgproc.ThresholdType.SAUVOLA))
+    binary = img.filter(
+        cueimgproc.CannyFilter(),
+        cueimgproc.BinaryFilter(),
+        cueimgproc.RemoveSmallObjectsFilter(32),
+    )
     labelled_image = cueimgproc.LabelledImage(binary.data, img)
     return _do_plotting(img, labelled_image.region_map)
 
@@ -36,7 +40,8 @@ def plot_threshold() -> figure.Figure:
 def plot_extra_threshold() -> figure.Figure:
     img = cueimgproc.Image.open(definitions.DATA_DIR / "stepped.tiff")
     binary = img.filter(
-        cueimgproc.ThresholdFilter(cueimgproc.ThresholdType.SAUVOLA),
+        cueimgproc.CannyFilter(),
+        cueimgproc.BinaryFilter(),
         cueimgproc.RemoveSmallObjectsFilter(32),
     )
 

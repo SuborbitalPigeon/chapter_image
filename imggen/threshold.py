@@ -15,10 +15,10 @@ def _do_plotting(
     fig: figure.Figure, ax: np.ndarray, threshold_type: cueimgproc.ThresholdType
 ) -> Union[float, np.ndarray]:
     img = cueimgproc.Image.open(definitions.DATA_DIR / "stepped.tiff")
-    img = img.apply_filter(cueimgproc.RemoveAlphaFilter())
+    img = img.filter(cueimgproc.RemoveAlphaFilter())
 
-    filter = cueimgproc.ThresholdFilter(threshold_type)
-    threshed = img.apply_filter(filter)
+    filter_ = cueimgproc.ThresholdFilter(threshold_type)
+    threshed = img.filter(filter_)
 
     original_plot = img.plot(ax[0])
     ax[0].set(title="Original image")
@@ -30,14 +30,15 @@ def _do_plotting(
 
     histogram.plot_histogram(img.data, ax[2])
 
-    return filter.threshold_value
+    return filter_.threshold_value
 
 
 def plot_global_threshold() -> figure.Figure:
     fig, ax = plottools.create_subplots(0.7, 3)
 
     value = _do_plotting(fig, ax, cueimgproc.ThresholdType.OTSU)
-    ax[2].axvline(value, color="red")
+    ax[2].axvline(value, label="Threshold", color="orange")
+    ax[2].legend()
 
     return fig
 

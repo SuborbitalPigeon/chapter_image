@@ -8,5 +8,6 @@ equalise_hist.png
 global_threshold.png
 groundtruth_error.png
 groundtruth_transform.png
-pipelines/*
+pipelines/
 sobel.png
+transforms/

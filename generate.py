@@ -4,7 +4,7 @@ import pathlib
 import subprocess
 from typing import Any, Callable, Optional
 
-from matplotlib import figure
+from matplotlib import figure, pyplot as plt
 
 from imggen import (
     affine,
@@ -13,12 +13,10 @@ from imggen import (
     denoise,
     equalisation,
     equalise_hist,
-    groundtruth_transform,
-    threshold,
     sobel,
+    threshold,
 )
-from imggen.pipelines import threshold as pthreshold
-
+from imggen import pipelines, transforms
 
 log = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
@@ -46,6 +44,7 @@ def generate_image(
     log.info(f"Generating {file_name}")
     fig = func(**kwargs)
     fig.savefig(image_path, transparent=True)
+    plt.close(fig)
 
 
 # Generate images
@@ -59,14 +58,52 @@ generate_image(denoise.plot_denoise_all, "denoise_all." + image_type)
 generate_image(equalisation.plot_equalise, "equalise." + image_type)
 generate_image(equalise_hist.plot_equalise_hist, "equalise_hist." + image_type)
 generate_image(threshold.plot_global_threshold, "global_threshold." + image_type)
-generate_image(groundtruth_transform.plot_error, "groundtruth_error." + image_type)
-generate_image(groundtruth_transform.plot_full_part, "groundtruth_transform." + image_type)
 generate_image(sobel.plot_sobel, "sobel." + image_type)
 
 # Pipeline images
 pipelines_dir = pathlib.Path("pipelines")
-generate_image(pthreshold.plot_threshold, pipelines_dir / "threshold.png")
-generate_image(pthreshold.plot_extra_threshold, pipelines_dir / "threshold_triple.png")
+generate_image(pipelines.canny.plot_threshold, pipelines_dir / ("canny." + image_type))
+generate_image(
+    pipelines.canny.plot_extra_threshold, pipelines_dir / ("canny_extra." + image_type)
+)
+generate_image(
+    pipelines.threshold.plot_threshold, pipelines_dir / ("threshold." + image_type)
+)
+generate_image(
+    pipelines.threshold.plot_extra_threshold,
+    pipelines_dir / ("threshold_triple." + image_type),
+)
+
+# Transform images
+transforms_dir = pathlib.Path("transforms")
+
+generate_image(
+    transforms.canny.plot_error, transforms_dir / ("canny_error." + image_type)
+)
+generate_image(
+    transforms.canny.plot_full_part, transforms_dir / ("canny." + image_type)
+)
+
+generate_image(
+    transforms.fill.plot_error, transforms_dir / ("fill_error." + image_type)
+)
+generate_image(transforms.fill.plot_full_part, transforms_dir / ("fill." + image_type))
+
+generate_image(
+    transforms.groundtruth.plot_error,
+    transforms_dir / ("groundtruth_error." + image_type),
+)
+generate_image(
+    transforms.groundtruth.plot_full_part,
+    transforms_dir / ("groundtruth." + image_type),
+)
+
+generate_image(
+    transforms.threshold.plot_error, transforms_dir / ("threshold_error." + image_type)
+)
+generate_image(
+    transforms.threshold.plot_full_part, transforms_dir / ("threshold." + image_type)
+)
 
 # Generate text
 src_file = SRC_DIR / "image.md"

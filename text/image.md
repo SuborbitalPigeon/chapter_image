@@ -86,7 +86,7 @@ This is an important concept to understand for several image processing algorith
 A *histogram* is a representation of the distribution of pixel values in an image.
 It is common to show the lightness channel of an image in order to determine how well exposed the image is.
 
-See [@fig:histogram] for a demonstration of an image's histogram.
+See [@fig:histogram] for a demonstration of an image's histogram^[This figure has yet to be created].
 Also shown are underexposed and overexposed images and their respective histograms.
 It can be seen that the histogram is moved to the left-hand side for the underexposed image, and to the right for the overexposed.
 
@@ -94,12 +94,41 @@ An ideally-exposed image would have an equal number of pixels for each value, an
 Flattening the histogram of an image can be achieved with histogram equalisation, and this is described in [@sec:histographequalisation].
 However, for photographic purposes, this often causes displeasing results.
 
-## Ultrasonic C-scans
+##Ultrasonic testing
 
-<!-- ![An example A-scan](images/ascan.png){#fig:ascan} -->
+By making use of probes containing *piezoelectric* materials, it is possible to inject ultrasound into a medium.
+Piezoelectric materials deform when a voltage is applied across them, and a voltage appears across them when they are deformed.
 
-An ultrasound signal can be represented in the time domain in an *A-scan*.
-An A-scan shows the amplitude of the ultrasound response with respect to the time since the pulse was sent.
+![A diagram of an ultrasonic transducer](An ultrasonic transducer, source: [@echocardiographer.org_transducer_nodate](images/transducer.png){#fig:transducer}
+
+An example transducer is shown in [@fig:transducer].
+The piezoelectric crystal is excited by an AC voltage, which causes it to vibrate at the source's frequency.
+In order to get the largest oscillations, it is necessary to use a frequency which is as close as possible to the natural frequency of the crystal.
+This is dependent on the dimensions of the crystal.
+The crystal is mounted on a backing material, which is used to reduce the oscillations of the crystal once the pulse has been sent, to reduce *ringing effects*.
+
+### Representations of ultrasonic data
+
+There are three main representations of ultrasonic scans:
+
+A-scan
+  ~ Can be represented as a graph of amplitude of echo against time.
+  
+B-scan
+  ~ Displays ultrasonic response along a line, probe moves in one axis.
+    Can be visualised as A-scans put on their side.
+    
+C-scan
+  ~ Displays an ultrasonic metric as a function of 2D position, where the probe or beam moves in two axes.
+    Various metrics can be used, such as thickness or maximum amplitude.
+
+Using a single element probe, mechanical movement of the probe is required to acquire B and C-scans, namely 1D movement for B and 2D movement for C-scans.
+With phased array probes, which contain multiple elements, it is possible to acquire a B-scan without moving the probe, and a C-scan by moving in one axis.
+
+![An example A-scan, taken from an oscilloscope](images/ascan.png){#fig:ascan}
+
+An ultrasound signal can be represented in the time domain in an *A-scan*, as shown in [@fig:ascan].
+A-scans show the amplitude of the ultrasound response with respect to the time since the pulse was sent.
 By using the speed of propagation in the material, it is possible to convert time to depth.
 This means that the A-scan can also be seen as echo amplitude vs. depth.
 
@@ -141,7 +170,7 @@ This section contains details of different image processing techniques.
 
 ## Image transforms
 
-In this section, *general image transforms* refers to operations which affect the shape, position and dimensions of the image.
+In this section, *general image transforms* refer to operations which affect the shape, position and dimensions of the image.
 This includes the following *affine transformations*:
 
 * Translation
@@ -206,7 +235,7 @@ where $\theta$ is the anti-clockwise rotation angle referred to the positive $x$
 
 <!-- It is common in photography to convert between portrait and landscape orientation of photographs^[Also for the far too often required conversion of vertically phone-captured videos to landscape for display on non-phone devices], this requires a positive or negative rotation of 90°. -->
 
-It should be noted that this matrix refers to a rotation where the pivot point is the origin point of the image (top-left).
+It should be noted that this matrix refers to a rotation where the pivot point is the origin point of the image (top left).
 In order to use another pivot point, a translation procedure must also be performed.
 
 ### Shear
@@ -400,7 +429,7 @@ It can be seen that the simple methods
 
 ## Thresholding {#sec:thresholding}
 
-*Thresholding* is a process which can be used to convert a full scale image to a binary image (0 or 1).
+*Thresholding* is a process which can be used to convert a full-scale image to a binary image (0 or 1).
 The general working principle of this is to split the image into *dark* and *light* regions.
 In order to divide the pixels into dark and light, a *threshold* value must be found.
 
@@ -519,7 +548,7 @@ For example, by reducing the noise on only the highest levels of the decompositi
 # Acquisition of C-scan images
 
 <!---
-Details of how C-scans are generated from the underlying data.
+Details of how C-scans are generated from the underlying raw_data.
 Things about VIEWS and how the gating parameters work and so on.
 -->
 
@@ -668,6 +697,10 @@ Regions with areas less than 32 pixels are discarded, as are regions with eccent
 
 ## Edge detection
 
+![Results of edge detection using the Canny algorithm](images/pipelines/canny.png){#fig:pipeline_canny}
+
+![Results of edge detection using the Canny algorithm with additional thresholding](images/pipelines/canny_extra.png){#fig:pipeline_canny_extra}
+
 ## Region growing
 
 # Defect recognition performance evaluation
@@ -710,20 +743,32 @@ which corresponds to:
 * Rotation $\theta = 0.173°$.
 * Shear $\phi = 0.501°$.
 
-![Estimated transform with errors](images/groundtruth_transform.png){#fig:groundtruth_transform}
+![Estimated transform with errors](images/transforms/groundtruth.png){#fig:groundtruth_transform}
 
 When finding this transformation, the points will have certain errors with respect to the ideal locations.
 An image which shows these points with these errors is shown in [#fig:groundtruth_transform].
 
-![Estimated transform errors](images/groundtruth_error.png){#fig:groundtruth_error}
+![Estimated transform errors](images/transforms/groundtruth_error.png){#fig:groundtruth_error}
 
 The values of these errors are shown in a histogram in [#fig:groundtruth_error].
 
 ## Thresholding
 
+![Results of transform using thresholding](images/transforms/threshold.png){#fig:transform_threshold}
+
+![Error histogram for transform using thresholding](images/transforms/threshold_error.png){#fig:transform_threshold_error}
+
 ## Edge detection
 
+![Results of transform using Canny edge detection](images/transforms/canny.png){#fig:transform_canny}
+
+![Error histogram for transform using Canny edge detection](images/transforms/canny_error.png){#fig:transform_canny_error}
+
 ## Region filling
+
+![Results of transform using region filling](images/transforms/fill.png){#fig:transform_fill}
+
+![Error histogram for transform using Canny edge detection](images/transforms/fill_error.png){#fig:transform_fill_error}
 
 # Conclusions and future work
 

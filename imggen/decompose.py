@@ -1,5 +1,6 @@
 import cueimgproc
 from matplotlib import cm, colors, figure
+import numpy as np
 from skimage import io
 
 import definitions
@@ -14,7 +15,7 @@ def plot_wavelet_decompose() -> figure.Figure:
     decompose = cueimgproc.WaveletDecompose("db1", 3)
     decompose(img)
 
-    fig, axs = plottools.create_subplots(1.5, 4, 3, sharex='all', sharey='all')
+    fig, axs = plottools.create_subplots(1.5, 4, 3, sharex="all", sharey="all")
     gs = axs[0, 0].get_gridspec()
     for ax in axs[0, :]:  # Remove the top row and replace with one wide plot
         ax.remove()
@@ -27,11 +28,11 @@ def plot_wavelet_decompose() -> figure.Figure:
 
     plottools.remove_ticks(axs)
 
-    directions = ['horizontal', 'vertical', 'diagonal']
+    directions = ["horizontal", "vertical", "diagonal"]
     for i in range(1, 4):
         level_coeffs = decompose.get_level_coeffs(i)
-        vmin = min([direction.min() for direction in level_coeffs])
-        vmax = max([direction.max() for direction in level_coeffs])
+        vmin = min([np.min(direction) for direction in level_coeffs])
+        vmax = max([np.min(direction) for direction in level_coeffs])
         norm = colors.Normalize(vmin, vmax)
 
         for j in range(3):

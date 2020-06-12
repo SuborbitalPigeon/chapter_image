@@ -7,8 +7,8 @@ import definitions
 
 def plot_equalise() -> figure.Figure:
     img = cueimgproc.Image.open(definitions.DATA_DIR / "stepped.tiff")
-    global_equalised = img.apply_filter(cueimgproc.EqualiseFilter(False))
-    local_equalised = img.apply_filter(cueimgproc.EqualiseFilter(True))
+    global_equalised = img.filter(cueimgproc.EqualiseFilter(False))
+    local_equalised = img.filter(cueimgproc.EqualiseFilter(True))
 
     fig, ax = plottools.create_subplots(0.85, 3, sharex="all")
 
