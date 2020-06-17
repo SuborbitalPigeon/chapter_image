@@ -27,7 +27,7 @@ def create_subplots(
         (definitions.PAGE_WIDTH * height_ratio) / 2.54,
     )
     fig, ax = plt.subplots(
-        nrows, ncols, figsize=size_inches, dpi=300, constrained_layout=True, **kwargs
+        nrows, ncols, figsize=size_inches, dpi=220, constrained_layout=True, **kwargs
     )
     return fig, ax
 
